@@ -5,7 +5,7 @@ from flask_cors import CORS
 import json
 import copy
 
-SEARCH_DEPTH = 5
+SEARCH_DEPTH = 4
 WIN_VAL = 50
 
 def get_valid_moves(drop_height):
@@ -251,7 +251,7 @@ def get_percent():
     board = json.loads(data['board'])
     drop_height = calculate_drop_height(board)
     player = get_turn(board)
-    percent = player_one_win_percentage(board, drop_height, SEARCH_DEPTH, player)
+    percent = player_one_win_percentage(board, drop_height, SEARCH_DEPTH + 1, player)
     move = get_best_move(board, drop_height, player)
     
     return json.dumps({"percent": percent, "best": move})
