@@ -57,7 +57,12 @@ def get_best_move(board, drop_height, maximizing_player):
         return best_move
     
 def minimax(board, drop_height, depth, alpha, beta, maximizing_player):
-    val = evaluate(board)
+    board_int = board_to_int(board)
+    val = HASHES.get(board_int, None)
+
+    if val == None:
+        val = evaluate(board)
+        HASHES[board_int] = val
     
     if depth == 0 or val == WIN_VAL or val == -WIN_VAL:
         return val, depth
@@ -241,6 +246,44 @@ def get_turn(board):
                 two_count += 1
     return one_count == two_count
 
+def calculate_drop_height_modified(board):
+    ret_val = []
+    height = len(board)
+    for k in range(len(board[0])):
+        appended = False
+        for i in range(height):
+            if board[height - i - 1][k] == 0:
+                ret_val.append(height - i)
+                appended = True
+                break
+        if not appended:
+            ret_val.append(0)
+    return ret_val
+
+def board_to_int(board):
+    ret_str = ""
+    drop_height = calculate_drop_height_modified(board)
+    
+    for height in drop_height:
+        ret_str += bin(height)[2:]
+
+    for i in range(len(board)):
+        for k in range(len(board[0])):
+            if board[i][k] == -1:
+                ret_str += '1'
+            else:
+                ret_str += '0'
+    
+    return int(ret_str, 2)
+
+def write_hashes(hashes):
+    with open(FILENAME, "w") as f:
+        json.dump(hashes, f)
+
+FILENAME = "val_hashes.json"
+HASHES = {}
+with open(FILENAME, "r") as f:
+    HASHES = json.load(f)
 
 app = flask.Flask(__name__)
 CORS(app)
@@ -255,6 +298,8 @@ def get_percent():
     percent = player_one_win_percentage(board, drop_height, SEARCH_DEPTH + 1, player)
     move = get_best_move(board, drop_height, player)
     
+    write_hashes(HASHES)
+
     return json.dumps({"percent": percent, "best": move})
 
 if __name__ == '__main__':
