@@ -31,6 +31,7 @@ def get_best_move(board, drop_height, maximizing_player):
     for action in valid_moves:
         new_board, new_drop_height = take_action(copy.deepcopy(board), copy.deepcopy(drop_height), maximizing_player, action)
         val, depth = minimax(new_board, new_drop_height, SEARCH_DEPTH, -math.inf, math.inf, not maximizing_player)
+
         if maximizing_player and val == WIN_VAL:
             if depth > greatest_win_depth:
                 greatest_win_depth = depth
@@ -40,12 +41,12 @@ def get_best_move(board, drop_height, maximizing_player):
                 greatest_win_depth = depth
                 win_index = action
         elif maximizing_player:
-            altered = val + (abs(3 - action) + (len(board) - drop_height[action]) // 2)
+            altered = val - (abs(3 - action) + (len(board) - drop_height[action]) // 2)
             if altered > greatest_val:
                 greatest_val = altered
                 best_move = action
         else:
-            altered = val - (abs(3 - action) + (len(board) - drop_height[action]) // 2)
+            altered = val + (abs(3 - action) + (len(board) - drop_height[action]) // 2)
             if altered < smallest_val:
                 smallest_val = altered
                 best_move = action
@@ -180,11 +181,11 @@ def evaluate(board):
                 
             if threats[k][i] == 1 and this_col == -1:
                 this_col = 1
-                multiplier = 1
+                multiplier = 5
                 
             if threats[k][i] == -1 and this_col == 1:
                 this_col = -1
-                multiplier = 1
+                multiplier = 5
         threat_score += this_col * multiplier   
             
     return three_score + threat_score
