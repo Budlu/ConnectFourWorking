@@ -4,9 +4,12 @@ import flask
 from flask_cors import CORS
 import json
 import copy
+import pickle
 
-SEARCH_DEPTH = 4
+SEARCH_DEPTH = 5
 WIN_VAL = 50
+SINGLE_THREAT_VAL = 5
+MULTI_THREAT_VAL = 20
 
 def get_valid_moves(drop_height):
     valid_moves = []
@@ -30,7 +33,7 @@ def get_best_move(board, drop_height, maximizing_player):
 
     for action in valid_moves:
         new_board, new_drop_height = take_action(copy.deepcopy(board), copy.deepcopy(drop_height), maximizing_player, action)
-        val, depth = minimax(new_board, new_drop_height, SEARCH_DEPTH, -math.inf, math.inf, not maximizing_player)
+        val, depth = minimax(new_board, new_drop_height, SEARCH_DEPTH - 1, -math.inf, math.inf, not maximizing_player)
 
         if maximizing_player and val == WIN_VAL:
             if depth > greatest_win_depth:
@@ -70,32 +73,42 @@ def minimax(board, drop_height, depth, alpha, beta, maximizing_player):
     if maximizing_player:
         max_eval = -math.inf
         selected_depth = 0
+
         for action in get_valid_moves(drop_height):
             board_copy = copy.deepcopy(board)
             drop_height_copy = copy.deepcopy(drop_height)
+
             new_board, new_drop_height = take_action(board_copy, drop_height_copy, maximizing_player, action)
             this_val, eval_depth = minimax(new_board, new_drop_height, depth - 1, alpha, beta, False)
+            
             if this_val > max_eval:
                 max_eval = this_val
                 selected_depth = eval_depth
+
             alpha = max([alpha, max_eval])
             if beta <= alpha:
                 break
+
         return max_eval, selected_depth
     else:
         min_eval = math.inf
         selected_depth = 0
+
         for action in get_valid_moves(drop_height):
             board_copy = copy.deepcopy(board)
             drop_height_copy = copy.deepcopy(drop_height)
+
             new_board, new_drop_height = take_action(board_copy, drop_height_copy, maximizing_player, action)
             this_val, eval_depth = minimax(new_board, new_drop_height, depth - 1, alpha, beta, True)
+
             if this_val < min_eval:
                 min_eval = this_val
                 selected_depth = eval_depth
+
             beta = min([beta, min_eval])
             if beta <= alpha:
                 break
+            
         return min_eval, selected_depth
 
 def evaluate(board):
@@ -106,10 +119,16 @@ def evaluate(board):
     for val in [1, -1]:
         for i in range(len(board[0]) - 3):
             for k in range(len(board)):
+
                 if(board[k][i] == val and board[k][i] == board[k][i + 1] and board[k][i + 1] == board[k][i + 2] and board[k][i + 2] == board[k][i + 3]):
                     return WIN_VAL * val
-                if((board[k][i] == val and board[k][i] == board[k][i + 1] and board[k][i + 1] == board[k][i + 2] and board[k][i + 3] == 0) or (board[k][i] == val and board[k][i] == board[k][i + 1] and board[k][i + 1] == board[k][i + 3] and board[k][i + 2] == 0) or (board[k][i] == val and board[k][i] == board[k][i + 2] and board[k][i + 2] == board[k][i + 3] and board[k][i + 1] == 0) or (board[k][i + 1] == val and board[k][i + 1] == board[k][i + 2] and board[k][i + 2] == board[k][i + 3] and board[k][i] == 0)):
+
+                if((board[k][i] == val and board[k][i] == board[k][i + 1] and board[k][i + 1] == board[k][i + 2] and board[k][i + 3] == 0) or 
+                    (board[k][i] == val and board[k][i] == board[k][i + 1] and board[k][i + 1] == board[k][i + 3] and board[k][i + 2] == 0) or 
+                    (board[k][i] == val and board[k][i] == board[k][i + 2] and board[k][i + 2] == board[k][i + 3] and board[k][i + 1] == 0) or 
+                    (board[k][i + 1] == val and board[k][i + 1] == board[k][i + 2] and board[k][i + 2] == board[k][i + 3] and board[k][i] == 0)):
                     three_score += val * (k // 2)
+
                     if k < 5:
                         for j in range(4):
                             if board[k + 1][i + j] == 0:
@@ -119,18 +138,28 @@ def evaluate(board):
     for val in [1, -1]:            
         for i in range(len(board[0])):
             for k in range(len(board) - 3):
+
                 if(board[k][i] == val and board[k][i] == board[k + 1][i] and board[k + 1][i] == board[k + 2][i] and board[k + 2][i] == board[k + 3][i]):
                     return WIN_VAL * val
-                if((board[k][i] == val and board[k][i] == board[k + 1][i] and board[k + 1][i] == board[k + 2][i] and board[k + 3][i] == 0) or (board[k][i] == val and board[k][i] == board[k + 1][i] and board[k + 1][i] == board[k + 3][i] and board[k + 2][i] == 0) or (board[k][i] == val and board[k][i] == board[k + 2][i] and board[k + 2][i] == board[k + 3][i] and board[k + 1][i] == 0) or (board[k + 1][i] == val and board[k + 1][i] == board[k + 2][i] and board[k + 2][i] == board[k + 3][i] and board[k][i] == 0)):
+
+                if((board[k][i] == val and board[k][i] == board[k + 1][i] and board[k + 1][i] == board[k + 2][i] and board[k + 3][i] == 0) or 
+                    (board[k][i] == val and board[k][i] == board[k + 1][i] and board[k + 1][i] == board[k + 3][i] and board[k + 2][i] == 0) or 
+                    (board[k][i] == val and board[k][i] == board[k + 2][i] and board[k + 2][i] == board[k + 3][i] and board[k + 1][i] == 0) or 
+                    (board[k + 1][i] == val and board[k + 1][i] == board[k + 2][i] and board[k + 2][i] == board[k + 3][i] and board[k][i] == 0)):
                     three_score += val
                     
     # TL to BR win check
     for val in [1, -1]:
         for i in range(len(board[0]) - 3):
             for k in range(len(board) - 3):
+
                 if(board[k][i] == val and board[k][i] == board[k + 1][i + 1] and board[k + 1][i + 1] == board[k + 2][i + 2] and board[k + 2][i + 2] == board[k + 3][i + 3]):
                     return WIN_VAL * val
-                if((board[k][i] == val and board[k][i] == board[k + 1][i + 1] and board[k + 1][i + 1] == board[k + 2][i + 2] and board[k + 3][i + 3] == 0) or (board[k][i] == val and board[k][i] == board[k + 1][i + 1] and board[k + 1][i + 1] == board[k + 3][i + 3] and board[k + 2][i + 2] == 0) or (board[k][i] == val and board[k][i] == board[k + 2][i + 2] and board[k + 2][i + 2] == board[k + 3][i + 3] and board[k + 1][i + 1] == 0) or (board[k + 1][i + 1] == val and board[k + 1][i + 1] == board[k + 2][i + 2] and board[k + 2][i + 2] == board[k + 3][i + 3] and board[k][i] == 0)):
+
+                if((board[k][i] == val and board[k][i] == board[k + 1][i + 1] and board[k + 1][i + 1] == board[k + 2][i + 2] and board[k + 3][i + 3] == 0) or 
+                    (board[k][i] == val and board[k][i] == board[k + 1][i + 1] and board[k + 1][i + 1] == board[k + 3][i + 3] and board[k + 2][i + 2] == 0) or 
+                    (board[k][i] == val and board[k][i] == board[k + 2][i + 2] and board[k + 2][i + 2] == board[k + 3][i + 3] and board[k + 1][i + 1] == 0) or 
+                    (board[k + 1][i + 1] == val and board[k + 1][i + 1] == board[k + 2][i + 2] and board[k + 2][i + 2] == board[k + 3][i + 3] and board[k][i] == 0)):
                     three_score += val
                     if k < 2:
                         for j in range(4):
@@ -147,10 +176,16 @@ def evaluate(board):
     for val in [1, -1]:
         for i in range(len(board[0]))[3::]:
             for k in range(len(board) - 4):
+
                 if(board[k][i] == val and board[k][i] == board[k + 1][i - 1] and board[k + 1][i - 1] == board[k + 2][i - 2] and board[k + 2][i - 2] == board[k + 3][i - 3]):
                     return WIN_VAL * val
-                if((board[k][i] == val and board[k][i] == board[k + 1][i - 1] and board[k + 1][i - 1] == board[k + 2][i - 2] and board[k + 3][i - 3] == 0) or (board[k][i] == val and board[k][i] == board[k + 1][i - 1] and board[k + 1][i - 1] == board[k + 3][i - 3] and board[k + 2][i - 2] == 0) or (board[k][i] == val and board[k][i] == board[k + 2][i - 2] and board[k + 2][i - 2] == board[k + 3][i - 3] and board[k + 1][i - 1] == 0) or (board[k + 1][i - 1] == val and board[k + 1][i - 1] == board[k + 2][i - 2] and board[k + 2][i - 2] == board[k + 3][i - 3] and board[k][i] == 0)):
+
+                if((board[k][i] == val and board[k][i] == board[k + 1][i - 1] and board[k + 1][i - 1] == board[k + 2][i - 2] and board[k + 3][i - 3] == 0) or 
+                    (board[k][i] == val and board[k][i] == board[k + 1][i - 1] and board[k + 1][i - 1] == board[k + 3][i - 3] and board[k + 2][i - 2] == 0) or 
+                    (board[k][i] == val and board[k][i] == board[k + 2][i - 2] and board[k + 2][i - 2] == board[k + 3][i - 3] and board[k + 1][i - 1] == 0) or 
+                    (board[k + 1][i - 1] == val and board[k + 1][i - 1] == board[k + 2][i - 2] and board[k + 2][i - 2] == board[k + 3][i - 3] and board[k][i] == 0)):
                     three_score += val
+
                     if k < 2:
                         for j in range(4):
                             if board[k + 1 + j][i - j] == 0:
@@ -174,23 +209,23 @@ def evaluate(board):
                 
             if threats[k][i] == -1 and this_col == -1:
                 if ((k - col_ind) % 2) == 1:
-                    multiplier = 20
+                    multiplier = MULTI_THREAT_VAL
                 else:
-                    multiplier = 5
+                    multiplier = SINGLE_THREAT_VAL
                 
             if threats[k][i] == 1 and this_col == 1:
                 if ((k - col_ind) % 2) == 1:
-                    multiplier = 20
+                    multiplier = MULTI_THREAT_VAL
                 else:
-                    multiplier = 5
+                    multiplier = SINGLE_THREAT_VAL
                 
             if threats[k][i] == 1 and this_col == -1:
                 this_col = 1
-                multiplier = 5
+                multiplier = SINGLE_THREAT_VAL
                 
             if threats[k][i] == -1 and this_col == 1:
                 this_col = -1
-                multiplier = 5
+                multiplier = SINGLE_THREAT_VAL
         threat_score += this_col * multiplier   
             
     return three_score + threat_score
@@ -277,13 +312,17 @@ def board_to_int(board):
     return int(ret_str, 2)
 
 def write_hashes(hashes):
-    with open(FILENAME, "w") as f:
-        json.dump(hashes, f)
+    with open(FILENAME, "wb") as f:
+        pickle.dump(hashes, f)
 
-FILENAME = "val_hashes.json"
+FILENAME = "val_hashes.p"
 HASHES = {}
-with open(FILENAME, "r") as f:
-    HASHES = json.load(f)
+with open(FILENAME, "rb") as f:
+    unpickler = pickle.Unpickler(f)
+    try:
+        HASHES = unpickler.load()
+    except EOFError:
+        print(FILENAME + " is empty.")
 
 app = flask.Flask(__name__)
 CORS(app)
@@ -295,7 +334,7 @@ def get_percent():
     board = json.loads(data['board'])
     drop_height = calculate_drop_height(board)
     player = get_turn(board)
-    percent = player_one_win_percentage(board, drop_height, SEARCH_DEPTH + 1, player)
+    percent = player_one_win_percentage(board, drop_height, SEARCH_DEPTH, player)
     move = get_best_move(board, drop_height, player)
     
     write_hashes(HASHES)
