@@ -6,7 +6,7 @@ import json
 import copy
 import pickle
 
-SEARCH_DEPTH = 4
+SEARCH_DEPTH = 5
 WIN_VAL = 50
 SINGLE_THREAT_VAL = 5
 MULTI_THREAT_VAL = 20
