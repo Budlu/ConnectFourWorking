@@ -6,7 +6,7 @@ import json
 import copy
 import pickle
 
-SEARCH_DEPTH = 5
+SEARCH_DEPTH = 4
 WIN_VAL = 50
 SINGLE_THREAT_VAL = 5
 MULTI_THREAT_VAL = 20
@@ -33,7 +33,7 @@ def get_best_move(board, drop_height, maximizing_player):
 
     for action in valid_moves:
         new_board, new_drop_height = take_action(copy.deepcopy(board), copy.deepcopy(drop_height), maximizing_player, action)
-        val, depth = minimax(new_board, new_drop_height, SEARCH_DEPTH - 1, -math.inf, math.inf, not maximizing_player)
+        val, depth = minimax(new_board, new_drop_height, SEARCH_DEPTH - 1, -math.inf, math.inf, not maximizing_player, None, None)
 
         if maximizing_player and val == WIN_VAL:
             if depth > greatest_win_depth:
@@ -59,8 +59,12 @@ def get_best_move(board, drop_height, maximizing_player):
     else:
         return best_move
     
-def minimax(board, drop_height, depth, alpha, beta, maximizing_player):
-    board_int = board_to_int(board)
+def minimax(board, drop_height, depth, alpha, beta, maximizing_player, last_board, last_action):
+    if last_board != None:
+        board_int = board_to_int_fast(last_board, last_action, not maximizing_player)
+    else:
+        board_int = board_to_int(board)
+
     val = HASHES.get(board_int, None)
 
     if val == None:
@@ -79,7 +83,7 @@ def minimax(board, drop_height, depth, alpha, beta, maximizing_player):
             drop_height_copy = copy.deepcopy(drop_height)
 
             new_board, new_drop_height = take_action(board_copy, drop_height_copy, maximizing_player, action)
-            this_val, eval_depth = minimax(new_board, new_drop_height, depth - 1, alpha, beta, False)
+            this_val, eval_depth = minimax(new_board, new_drop_height, depth - 1, alpha, beta, False, board_int, action)
             
             if this_val > max_eval:
                 max_eval = this_val
@@ -99,7 +103,7 @@ def minimax(board, drop_height, depth, alpha, beta, maximizing_player):
             drop_height_copy = copy.deepcopy(drop_height)
 
             new_board, new_drop_height = take_action(board_copy, drop_height_copy, maximizing_player, action)
-            this_val, eval_depth = minimax(new_board, new_drop_height, depth - 1, alpha, beta, True)
+            this_val, eval_depth = minimax(new_board, new_drop_height, depth - 1, alpha, beta, True, board_int, action)
 
             if this_val < min_eval:
                 min_eval = this_val
@@ -242,7 +246,7 @@ def player_one_win_percentage(board, drop_height, depth, maximizing_player):
     new_board = copy.deepcopy(board)
     new_drop_height = copy.deepcopy(drop_height)
     
-    val, depth = minimax(new_board, new_drop_height, depth, -math.inf, math.inf, maximizing_player)
+    val, depth = minimax(new_board, new_drop_height, depth, -math.inf, math.inf, maximizing_player, None, None)
     
     p_one_percent = clamp(50 + (val * 2), 0, 100)
     return p_one_percent
@@ -300,7 +304,7 @@ def board_to_int(board):
     drop_height = calculate_drop_height_modified(board)
     
     for height in drop_height:
-        ret_str += bin(height)[2:]
+        ret_str += bin(height)[2:].zfill(3)
 
     for i in range(len(board)):
         for k in range(len(board[0])):
@@ -310,6 +314,22 @@ def board_to_int(board):
                 ret_str += '0'
     
     return int(ret_str, 2)
+
+def board_to_int_fast(last_board, action, player):
+    binary = bin(last_board)[2:].zfill(63)
+    current_height = binary[action*3:action*3+3]
+    current_height = int(current_height, 2)
+    current_height -= 1
+    current_height = bin(current_height)[2:].zfill(3)
+
+    new_str = binary[0:action*3] + current_height + binary[action*3+3:]
+    ret_val = int(new_str, 2)
+
+    if not player:
+        pos = (int(current_height, 2) - 1) * 7 + action
+        ret_val ^= 1 << (41 - pos)
+    
+    return ret_val
 
 def write_hashes(hashes):
     with open(FILENAME, "wb") as f:
