@@ -31,8 +31,6 @@ def get_best_move(board, drop_height, maximizing_player):
     smallest_val = math.inf
     best_move = 0
 
-    old = board_to_int(board)
-
     for action in valid_moves:
         new_board, new_drop_height = take_action(copy.deepcopy(board), copy.deepcopy(drop_height), maximizing_player, action)
         val, depth = minimax(new_board, new_drop_height, SEARCH_DEPTH - 1, -math.inf, math.inf, not maximizing_player, None, None)
@@ -325,21 +323,7 @@ def board_to_int_fast(last_board, action, player):
     current_height = bin(current_height)[2:].zfill(3)
 
     new_str = binary[0:action*3] + current_height + binary[action*3+3:]
-    try:
-        ret_val = int(new_str, 2)
-    except:
-        binary = bin(last_board)[2:].zfill(63)
-        print(binary)
-        current_height = binary[action*3:action*3+3]
-        print(current_height)
-        current_height = int(current_height, 2)
-        print(current_height)
-        current_height -= 1
-        print(current_height)
-        current_height = bin(current_height)[2:].zfill(3)
-        print(current_height)
-        new_str = binary[0:action*3] + current_height + binary[action*3+3:]
-        print(new_str)
+    ret_val = int(new_str, 2)
 
     if not player:
         pos = int(current_height, 2) * 7 + action
