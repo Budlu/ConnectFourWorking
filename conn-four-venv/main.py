@@ -6,7 +6,7 @@ import json
 import copy
 import pickle
 
-SEARCH_DEPTH = 5
+SEARCH_DEPTH = 6
 WIN_VAL = 50
 SINGLE_THREAT_VAL = 5
 MULTI_THREAT_VAL = 20
@@ -30,6 +30,8 @@ def get_best_move(board, drop_height, maximizing_player):
     greatest_val = -math.inf
     smallest_val = math.inf
     best_move = 0
+
+    old = board_to_int(board)
 
     for action in valid_moves:
         new_board, new_drop_height = take_action(copy.deepcopy(board), copy.deepcopy(drop_height), maximizing_player, action)
@@ -120,7 +122,7 @@ def evaluate(board):
     threats = np.zeros((6,7))
     
     # Horizontal win check
-    for val in [1, -1]:
+    for val in [-1, 1]:
         for i in range(len(board[0]) - 3):
             for k in range(len(board)):
 
@@ -139,7 +141,7 @@ def evaluate(board):
                                 threats[k][i + j] = val
 
     # Vertical win check
-    for val in [1, -1]:            
+    for val in [-1, 1]:            
         for i in range(len(board[0])):
             for k in range(len(board) - 3):
 
@@ -153,7 +155,7 @@ def evaluate(board):
                     three_score += val
                     
     # TL to BR win check
-    for val in [1, -1]:
+    for val in [-1, 1]:
         for i in range(len(board[0]) - 3):
             for k in range(len(board) - 3):
 
@@ -177,9 +179,9 @@ def evaluate(board):
                             threats[k - 1][i - 1] = val
                     
     # TR to BL win check           
-    for val in [1, -1]:
+    for val in [-1, 1]:
         for i in range(len(board[0]))[3::]:
-            for k in range(len(board) - 4):
+            for k in range(len(board) - 3):
 
                 if(board[k][i] == val and board[k][i] == board[k + 1][i - 1] and board[k + 1][i - 1] == board[k + 2][i - 2] and board[k + 2][i - 2] == board[k + 3][i - 3]):
                     return WIN_VAL * val
@@ -323,10 +325,24 @@ def board_to_int_fast(last_board, action, player):
     current_height = bin(current_height)[2:].zfill(3)
 
     new_str = binary[0:action*3] + current_height + binary[action*3+3:]
-    ret_val = int(new_str, 2)
+    try:
+        ret_val = int(new_str, 2)
+    except:
+        binary = bin(last_board)[2:].zfill(63)
+        print(binary)
+        current_height = binary[action*3:action*3+3]
+        print(current_height)
+        current_height = int(current_height, 2)
+        print(current_height)
+        current_height -= 1
+        print(current_height)
+        current_height = bin(current_height)[2:].zfill(3)
+        print(current_height)
+        new_str = binary[0:action*3] + current_height + binary[action*3+3:]
+        print(new_str)
 
     if not player:
-        pos = (int(current_height, 2) - 1) * 7 + action
+        pos = int(current_height, 2) * 7 + action
         ret_val ^= 1 << (41 - pos)
     
     return ret_val
