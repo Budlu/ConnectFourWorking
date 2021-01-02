@@ -11,11 +11,13 @@ WIN_VAL = 50
 SINGLE_THREAT_VAL = 5
 MULTI_THREAT_VAL = 20
 
+SEARCH_PRIORITY = [3, 4, 2, 5, 1, 6, 0]
+
 def get_valid_moves(drop_height):
     valid_moves = []
-    for i, height in enumerate(drop_height):
-        if(height >= 0):
-            valid_moves.append(i)
+    for action in SEARCH_PRIORITY:
+        if(drop_height[action] >= 0):
+            valid_moves.append(action)
     return valid_moves
 
 def take_action(this_board, this_drop_height, maximizing_player, action):
