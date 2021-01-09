@@ -15,10 +15,38 @@
 }
 
 .tile {
-    height: 128px;
+    height: 127px;
     width: 128px;
-    border: 1px solid black;
+    outline: 1px solid black;
     font-size: 64px;
     text-align: center;
-    margin-top: -1px;
+    margin-top: 1px;
+    margin-left: -25px;
+    margin-right: -25px;
+}
+
+.tile-red {
+    height: 127px;
+    width: 128px;
+    outline: 1px solid black;
+    font-size: 64px;
+    text-align: center;
+    margin-top: 1px;
+    margin-left: -25px;
+    margin-right: -25px;
+    background-color: red;
+    border-radius: 50%;
+}
+
+.tile-yellow {
+    height: 127px;
+    width: 128px;
+    outline: 1px solid black;
+    font-size: 64px;
+    text-align: center;
+    margin-top: 1px;
+    margin-left: -25px;
+    margin-right: -25px;
+    background-color: yellow;
+    border-radius: 50%;
 }
