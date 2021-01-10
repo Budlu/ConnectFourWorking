@@ -50,3 +50,29 @@
     background-color: yellow;
     border-radius: 50%;
 }
+
+.tile-red-highlighted {
+    height: 127px;
+    width: 128px;
+    outline: 3px solid black;
+    font-size: 64px;
+    text-align: center;
+    margin-top: 1px;
+    margin-left: -25px;
+    margin-right: -25px;
+    background-color: red;
+    border-radius: 50%;
+}
+
+.tile-yellow-highlighted {
+    height: 127px;
+    width: 128px;
+    outline: 3px solid black;
+    font-size: 64px;
+    text-align: center;
+    margin-top: 1px;
+    margin-left: -25px;
+    margin-right: -25px;
+    background-color: yellow;
+    border-radius: 50%;
+}

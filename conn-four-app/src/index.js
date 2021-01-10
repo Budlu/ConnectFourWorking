@@ -13,7 +13,8 @@ class Game extends React.Component
             board: props.board,
             active: true,
             maximizingPlayer: true,
-            maximizingIsRed: true
+            maximizingIsRed: true,
+            highlighted: generateBoard(props.columns, props.rows)
         };
     }
 
@@ -31,7 +32,7 @@ class Game extends React.Component
 
     renderColumn(i)
     {
-        let column = <Column index={i} total_height={this.props.rows} column={this.getColumn(i)} maxIsRed={this.state.maximizingIsRed}/>;
+        let column = <Column index={i} total_height={this.props.rows} column={this.getColumn(i)} maxIsRed={this.state.maximizingIsRed} highlighted={this.state.highlighted[i]} />;
         return <ul key={i} className="column"><button onClick={() => this.debugClick(i)}>{column}</button></ul>;
     }
 
@@ -67,6 +68,28 @@ class Game extends React.Component
         
         let newBoard = this.state.board.slice();
         newBoard[move][i] = chip;
+
+        let gameState = checkGameOver(newBoard, move, i);
+
+        if (gameState === 2)
+        {
+            this.setState({active: false});
+            console.log("Draw");
+        }
+        else if (gameState !== 0)
+        {
+            let new_highlighted = generateBoard(this.props.columns, this.props.rows);
+
+            for (let highlight of gameState)
+            {
+                new_highlighted[highlight[1]][highlight[0]] = 1;
+            }
+
+            this.setState({active: false, highlighted: new_highlighted});
+
+            let chip = this.state.board[gameState[0][0]][gameState[0][1]];
+            console.log("The winner is " + chip);
+        }
 
         this.setState({board: newBoard, maximizingPlayer: !this.state.maximizingPlayer})
     }
@@ -123,7 +146,7 @@ class Column extends React.Component
             }
         }
 
-        return <Tile key={i} class={className} />;
+        return <Tile key={i} class={className} highlighted={this.props.highlighted[i]} />;
     }
 
     render()
@@ -162,6 +185,91 @@ function generateBoard(rows, columns)
     }
 
     return board;
+}
+
+function checkGameOver(board, i, k)
+{
+    let height = board.length;
+    let width = board[0].length;
+
+    // Horizontal Win Check
+    let start = clamp(k-3, 0, width - 4);
+    let end = clamp(k, 0, width - 4);
+
+    while (start <= end)
+    {
+        let tiles = [board[i][start], board[i][start + 1], board[i][start + 2], board[i][start + 3]];
+        if (tiles.every((value, i, arr) => value === arr[0]))
+            return [[i, start], [i, start + 1], [i, start + 2], [i, start + 3]];
+        
+        start += 1;
+    }
+
+    // Vertical Win Check
+    if (i <= height - 4)
+    {
+        let tiles = [board[i][k], board[i + 1][k], board[i + 2][k], board[i + 3][k]];
+        if (tiles.every((value, i, arr) => value === arr[0]))
+            return [[i, k], [i + 1, k], [i + 2, k], [i + 3, k]];
+    }
+
+    // Diagonal Win Check (TL to BR)
+    let minLeftDiff = min(i, k);
+    start = clamp(minLeftDiff, 0, 3);
+
+    let minRightDiff = min(height - i - 1, width - k - 1);
+    end = clamp(3 - minRightDiff, 0, 3)
+
+    while (start >= end)
+    {
+        let tiles = [board[i - start][k - start], board[i - start + 1][k - start + 1], board[i - start + 2][k - start + 2], board[i - start + 3][k - start + 3]];
+        if (tiles.every((value, i, arr) => value === arr[0]))
+            return [[i - start, k - start], [i - start + 1, k - start + 1], [i - start + 2, k - start + 2], [i - start + 3, k - start + 3]];
+
+        start -= 1;
+    }
+
+    // Diagonal Win Check (TR to BL)
+    minLeftDiff = min(height - i - 1, k)
+    minRightDiff = min(i, width - k - 1)
+
+    start = clamp(minRightDiff, 0, 3)
+    end = clamp(3 - minLeftDiff, 0, 3)
+
+    while (start >= end)
+    {
+        let tiles = [board[i - start][k + start], board[i - start + 1][k + start - 1], board[i - start + 2][k + start - 2], board[i - start + 3][k + start - 3]];
+        if (tiles.every((value, i, arr) => value === arr[0]))
+            return [[i - start, k + start], [i - start + 1, k + start - 1], [i - start + 2, k + start - 2], [i - start + 3, k + start - 3]];
+
+        start -= 1;
+    }
+
+    for (let n = 0; n < width; n++)
+    {
+        if (!board[0][n])
+            return 0;
+    }
+
+    return 2;
+}
+
+function clamp(val, min, max)
+{
+    if (val >= max)
+        return max;
+    else if (val <= min)
+        return min;
+    else
+        return val;
+}
+
+function min(x1, x2)
+{
+    if (x1 < x2)
+        return x1;
+    else
+        return x2;
 }
 
 ReactDom.render(<Game rows={6} columns={7} board={generateBoard(6,7)} />, document.getElementById("root"));
