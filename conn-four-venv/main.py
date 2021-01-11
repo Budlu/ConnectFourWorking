@@ -7,7 +7,7 @@ import copy
 import pickle
 
 SEARCH_DEPTH = 6
-WIN_VAL = 50
+WIN_VAL = 200
 SINGLE_THREAT_VAL = 5
 MULTI_THREAT_VAL = 20
 
