@@ -13,10 +13,11 @@ class Main extends React.Component
         this.redFirst = this.redFirst.bind(this);
 
         this.startGame = this.startGame.bind(this);
+        this.startCallback = this.startCallback.bind(this);
         this.moveFromColumn = this.moveFromColumn.bind(this);
         this.computerMove = this.computerMove.bind(this);
         this.updateBoard = this.updateBoard.bind(this);
-        this.endGame = this.endGame.bind(this);
+        this.updateStatus = this.updateStatus.bind(this);
         this.restartGame = this.restartGame.bind(this);
 
         this.state = {
@@ -30,7 +31,8 @@ class Main extends React.Component
             playerFirst: true,
             redFirst: true,
             gameOver: false,
-            playerCanMove: true
+            playerCanMove: true,
+            status: "Pick your settings"
         }
     }
 
@@ -51,11 +53,13 @@ class Main extends React.Component
 
     startGame()
     {
-        this.setState({gameActive: true, playerCanMove: this.state.playerFirst}, this.computerCallback);
+        this.setState({gameActive: true, playerCanMove: this.state.playerFirst}, this.startCallback);
     }
 
-    computerCallback()
+    startCallback()
     {
+        this.updateStatus();
+
         if (!this.state.pvp)
         {
             if (!this.state.playerFirst)
@@ -77,14 +81,11 @@ class Main extends React.Component
         let newBoard = this.state.board.slice();
         newBoard[i][k] = chip;
 
-        this.setState({board: newBoard, maximizingPlayer: !this.state.maximizingPlayer});
-
         let gameState = checkGameOver(newBoard, i, k);
 
         if (gameState === 2)
         {
-            this.endGame();
-            console.log("Draw");
+            this.setState({board: newBoard, maximizingPlayer: !this.state.maximizingPlayer, gameActive: false, gameOver: true, stats: "It's a draw"});
             return;
         }
         else if (gameState !== 0)
@@ -96,13 +97,12 @@ class Main extends React.Component
                 new_highlighted[highlight[1]][highlight[0]] = 1;
             }
 
-            this.endGame();
-            this.setState({highlighted: new_highlighted});
+            this.setState({board: newBoard, maximizingPlayer: !this.state.maximizingPlayer, gameActive: false, gameOver: true, highlighted: new_highlighted, status: "The winner is " + chip});
 
-            let chip = this.state.board[gameState[0][0]][gameState[0][1]];
-            console.log("The winner is " + chip);
             return;
         }
+
+        this.setState({board: newBoard, maximizingPlayer: !this.state.maximizingPlayer}, this.updateStatus);
 
         if (!this.state.pvp && this.state.playerCanMove)
         {
@@ -110,14 +110,38 @@ class Main extends React.Component
         }
     }
 
-    endGame()
+    updateStatus()
     {
-        this.setState({gameActive: false, gameOver: true});
+        let redMessage = "Red's move";
+        let yellowMessage = "Yellow's move";
+
+        if (this.state.maximizingPlayer)
+        {
+            if (this.state.redFirst)
+            {
+                this.setState({status: redMessage});
+            }
+            else
+            {
+                this.setState({status: yellowMessage});
+            }
+        }
+        else
+        {
+            if (this.state.redFirst)
+            {
+                this.setState({status: yellowMessage});
+            }
+            else
+            {
+                this.setState({status: redMessage});
+            }
+        }
     }
 
     restartGame()
     {
-        this.setState({gameActive: false, board: generateBoard(6,7), highlighted: generateBoard(7,6), maximizingPlayer: true, gameOver: false, playerCanMove: true, playerFirst: true});
+        this.setState({gameActive: false, board: generateBoard(6,7), highlighted: generateBoard(7,6), maximizingPlayer: true, gameOver: false, playerCanMove: true, playerFirst: true, status: "Pick your settings"});
     }
 
     computerMove()
@@ -157,8 +181,9 @@ class Main extends React.Component
                     <Menu pvpMode={this.pvpMode} playerFirst={this.playerFirst} redFirst={this.redFirst} startGame={this.startGame} restartGame={this.restartGame} />
                     <Analysis visible={this.state.gameOver} />
                 </div>
-                <div class="column-2">
-                <Game rows={6} columns={7} board={this.state.board} highlighted={this.state.highlighted} updateBoard={this.updateBoard} active={this.state.gameActive} redFirst={this.state.redFirst} playerMove={this.state.playerCanMove} />
+                <div className="column-2">
+                    <h2>{this.state.status}</h2>
+                    <Game rows={6} columns={7} board={this.state.board} highlighted={this.state.highlighted} updateBoard={this.updateBoard} active={this.state.gameActive} redFirst={this.state.redFirst} playerMove={this.state.playerCanMove} />
                 </div>
             </div>
         );
