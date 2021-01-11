@@ -1,6 +1,10 @@
+.content {
+    column-count: 2;
+}
+
 .game {
     display: flex;
-    justify-content: center;
+    justify-content: right;
 }
 
 .column {
@@ -54,7 +58,8 @@
 .tile-red-highlighted {
     height: 127px;
     width: 128px;
-    outline: 3px solid black;
+    outline: 1px solid black;
+    box-shadow: 0 0 0px 4px black inset;
     font-size: 64px;
     text-align: center;
     margin-top: 1px;
@@ -67,7 +72,8 @@
 .tile-yellow-highlighted {
     height: 127px;
     width: 128px;
-    outline: 3px solid black;
+    outline: 1px solid black;
+    box-shadow: 0 0 0px 4px black inset;
     font-size: 64px;
     text-align: center;
     margin-top: 1px;

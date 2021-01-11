@@ -353,7 +353,7 @@ CORS(app)
 def get_percent():
     data = flask.request.get_json()
 
-    board = json.loads(data['board'])
+    board = data
     drop_height = calculate_drop_height(board)
     player = get_turn(board)
     percent = player_one_win_percentage(board, drop_height, SEARCH_DEPTH, player)

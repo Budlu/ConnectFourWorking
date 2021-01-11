@@ -2,6 +2,329 @@ import React from "react";
 import ReactDom from "react-dom";
 import "./style.css";
 
+class Main extends React.Component
+{
+    constructor(props)
+    {
+        super(props);
+
+        this.pvpMode = this.pvpMode.bind(this);
+        this.playerFirst = this.playerFirst.bind(this);
+        this.redFirst = this.redFirst.bind(this);
+
+        this.startGame = this.startGame.bind(this);
+        this.moveFromColumn = this.moveFromColumn.bind(this);
+        this.computerMove = this.computerMove.bind(this);
+        this.updateBoard = this.updateBoard.bind(this);
+        this.endGame = this.endGame.bind(this);
+        this.restartGame = this.restartGame.bind(this);
+
+        this.state = {
+            rows: 6,
+            columns: 7,
+            gameActive: false,
+            board: generateBoard(6,7),
+            highlighted: generateBoard(7, 6),
+            maximizingPlayer: true,
+            pvp: true,
+            playerFirst: true,
+            redFirst: true,
+            gameOver: false,
+            playerCanMove: true
+        }
+    }
+
+    pvpMode(mode)
+    {
+        this.setState({pvp: mode})
+    }
+
+    playerFirst(mode)
+    {
+        this.setState({playerFirst: mode});
+    }
+
+    redFirst(mode)
+    {
+        this.setState({redFirst: mode});
+    }
+
+    startGame()
+    {
+        this.setState({gameActive: true, playerCanMove: this.state.playerFirst}, this.computerCallback);
+    }
+
+    computerCallback()
+    {
+        if (!this.state.pvp)
+        {
+            if (!this.state.playerFirst)
+            {
+                console.log("computer move");
+                this.computerMove();
+            }
+        }
+    }
+
+    updateBoard(i, k)
+    {
+        let chip = 0;
+        if (this.state.maximizingPlayer)
+            chip = 1;
+        else
+            chip = -1;
+
+        let newBoard = this.state.board.slice();
+        newBoard[i][k] = chip;
+
+        this.setState({board: newBoard, maximizingPlayer: !this.state.maximizingPlayer});
+
+        let gameState = checkGameOver(newBoard, i, k);
+
+        if (gameState === 2)
+        {
+            this.endGame();
+            console.log("Draw");
+            return;
+        }
+        else if (gameState !== 0)
+        {
+            let new_highlighted = generateBoard(this.state.columns, this.state.rows);
+
+            for (let highlight of gameState)
+            {
+                new_highlighted[highlight[1]][highlight[0]] = 1;
+            }
+
+            this.endGame();
+            this.setState({highlighted: new_highlighted});
+
+            let chip = this.state.board[gameState[0][0]][gameState[0][1]];
+            console.log("The winner is " + chip);
+            return;
+        }
+
+        if (!this.state.pvp && this.state.playerCanMove)
+        {
+            this.setState({playerCanMove: false}, this.computerMove);
+        }
+    }
+
+    endGame()
+    {
+        this.setState({gameActive: false, gameOver: true});
+    }
+
+    restartGame()
+    {
+        this.setState({gameActive: false, board: generateBoard(6,7), highlighted: generateBoard(7,6), maximizingPlayer: true, gameOver: false, playerCanMove: true, playerFirst: true});
+    }
+
+    computerMove()
+    {
+        console.log(this.state.playerCanMove);
+        let options = {method: 'POST', mode: 'cors', headers: {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, body: JSON.stringify(this.state.board)};
+	
+        fetch("http://localhost:5000/percent", options)
+        .then(response => response.json())
+        .then(data => { this.moveFromColumn(data.best) } )
+        .then(final => { this.setState({playerCanMove: true}) } );
+    }
+
+    moveFromColumn(k)
+    {
+        let i = this.state.board.length - 1;
+
+        while (i >= 0)
+        {
+            if (!this.state.board[i][k])
+            {
+                this.updateBoard(i, k);
+                return;
+            }
+
+            i -= 1;
+        }
+
+        this.updateBoard(i, k);
+    }
+
+    render()
+    {
+        return (
+            <div className="content">
+                <div className="column-1">
+                    <Menu pvpMode={this.pvpMode} playerFirst={this.playerFirst} redFirst={this.redFirst} startGame={this.startGame} restartGame={this.restartGame} />
+                    <Analysis visible={this.state.gameOver} />
+                </div>
+                <div class="column-2">
+                <Game rows={6} columns={7} board={this.state.board} highlighted={this.state.highlighted} updateBoard={this.updateBoard} active={this.state.gameActive} redFirst={this.state.redFirst} playerMove={this.state.playerCanMove} />
+                </div>
+            </div>
+        );
+    }
+}
+
+class Menu extends React.Component
+{
+    constructor(props)
+    {
+        super(props);
+
+        this.playerVersusPlayer = this.playerVersusPlayer.bind(this);
+        this.playerVersusComputer = this.playerVersusComputer.bind(this);
+        this.backPVPPVC = this.backPVPPVC.bind(this);
+
+        this.whichPlayer = this.whichPlayer.bind(this);
+        this.playerFirstMenu = this.playerFirstMenu.bind(this);
+        this.computerFirstMenu = this.computerFirstMenu.bind(this);
+
+        this.whichColor = this.whichColor.bind(this);
+        this.redFirstMenu = this.redFirstMenu.bind(this);
+        this.yellowFirstMenu = this.yellowFirstMenu.bind(this);
+
+        this.startGame = this.startGame.bind(this);
+
+        this.state = {
+            prompt: "Select a mode: ",
+            buttonOneText: "Player v. Player",
+            buttonOneFunction: this.playerVersusPlayer,
+            buttonTwoText: "Player v. Computer",
+            buttonTwoFunction: this.playerVersusComputer,
+            backFunction: function(){},
+            gameStarted: false
+        }
+    }
+
+    render()
+    {
+        if (!this.state.gameStarted)
+        {
+            return (
+                <div className="menu">
+                    <h1>Connect Four</h1>
+                    {this.state.prompt}
+                    <button onClick={() => this.state.buttonOneFunction()}>{this.state.buttonOneText}</button>
+                    <button onClick={() => this.state.buttonTwoFunction()}>{this.state.buttonTwoText}</button>
+                    <button onClick={() => this.state.backFunction()}>Back</button>
+                </div>
+            );
+        }
+        else
+        {
+            return (
+                <div className="menu">
+                    <h1>Connect Four</h1>
+                    <button onClick={() => this.restartGame()}>Restart Game</button>
+                </div>
+            )
+        }
+    }
+
+    whichColor(backFunc)
+    {
+        this.setState({
+            prompt: "Which color goes first: ",
+            buttonOneText: "Red",
+            buttonOneFunction: this.redFirstMenu,
+            buttonTwoText: "Yellow",
+            buttonTwoFunction: this.yellowFirstMenu,
+            backFunction: backFunc
+        });
+    }
+    
+    whichPlayer()
+    {
+        this.setState({
+            prompt: "Who goes first: ",
+            buttonOneText: "Player",
+            buttonOneFunction: this.playerFirstMenu,
+            buttonTwoText: "Computer",
+            buttonTwoFunction: this.computerFirstMenu,
+            backFunction: this.backPVPPVC
+        });
+    }
+
+    backPVPPVC()
+    {
+        this.setState({
+            prompt: "Select a mode: ",
+            buttonOneText: "Player v. Player",
+            buttonOneFunction: this.playerVersusPlayer,
+            buttonTwoText: "Player v. Computer",
+            buttonTwoFunction: this.playerVersusComputer,
+            backFunction: function(){}
+        });
+    }
+
+    startGame()
+    {
+        this.props.startGame();
+        this.setState({gameStarted: true});
+    }
+
+    playerVersusPlayer()
+    {
+        console.log("PVP");
+        this.props.pvpMode(true);
+        this.whichColor(this.backPVPPVC);
+    }
+
+    playerVersusComputer()
+    {
+        console.log("PVC");
+        this.props.pvpMode(false);
+        this.whichPlayer();
+    }
+
+    playerFirstMenu()
+    {
+        console.log("Player first");
+        this.props.playerFirst(true);
+        this.whichColor(this.whichPlayer);
+    }
+
+    computerFirstMenu()
+    {
+        console.log("Computer first");
+        this.props.playerFirst(false);
+        this.whichColor(this.whichPlayer);
+    }
+
+    redFirstMenu()
+    {
+        console.log("Red first");
+        this.props.redFirst(true);
+        this.startGame();
+    }
+
+    yellowFirstMenu()
+    {
+        console.log("Yellow first");
+        this.props.redFirst(false);
+        this.startGame();
+    }
+
+    restartGame()
+    {
+        this.props.restartGame();
+        this.backPVPPVC();
+        this.setState({gameStarted: false});
+    }
+}
+
+class Analysis extends React.Component
+{
+
+    render()
+    {
+        if (this.props.visible)
+            return 0;
+        else
+            return "";
+    }
+}
+
 class Game extends React.Component
 {
     constructor(props)
@@ -10,10 +333,7 @@ class Game extends React.Component
         this.state = {
             rows: props.rows,
             columns: props.columns,
-            board: props.board,
-            active: true,
             maximizingPlayer: true,
-            maximizingIsRed: true,
             highlighted: generateBoard(props.columns, props.rows)
         };
     }
@@ -22,9 +342,9 @@ class Game extends React.Component
     {
         let column = [];
 
-        for (let i = 0; i < this.state.board.length; i++)
+        for (let i = 0; i < this.props.board.length; i++)
         {
-            column.push(this.state.board[i][k]);
+            column.push(this.props.board[i][k]);
         }
 
         return column;
@@ -32,17 +352,17 @@ class Game extends React.Component
 
     renderColumn(i)
     {
-        let column = <Column index={i} total_height={this.props.rows} column={this.getColumn(i)} maxIsRed={this.state.maximizingIsRed} highlighted={this.state.highlighted[i]} />;
+        let column = <Column index={i} total_height={this.props.rows} column={this.getColumn(i)} highlighted={this.props.highlighted[i]} redFirst={this.props.redFirst} />;
         return <ul key={i} className="column"><button onClick={() => this.debugClick(i)}>{column}</button></ul>;
     }
 
     getMoveHeight(k)
     {
-        let i = this.state.board.length - 1;
+        let i = this.props.board.length - 1;
 
         while (i >= 0)
         {
-            if (!this.state.board[i][k])
+            if (!this.props.board[i][k])
                 return i;
 
             i -= 1;
@@ -53,45 +373,17 @@ class Game extends React.Component
 
     debugClick(i)
     {
-        if (!this.state.active)
+        if (!this.props.active)
             return;
 
+        if (!this.props.playerMove)
+            return;
+        
         let move = this.getMoveHeight(i);
         if (move === -1)
             return;
-
-        let chip = 0;
-        if (this.state.maximizingPlayer)
-            chip = 1;
-        else
-            chip = -1;
         
-        let newBoard = this.state.board.slice();
-        newBoard[move][i] = chip;
-
-        let gameState = checkGameOver(newBoard, move, i);
-
-        if (gameState === 2)
-        {
-            this.setState({active: false});
-            console.log("Draw");
-        }
-        else if (gameState !== 0)
-        {
-            let new_highlighted = generateBoard(this.props.columns, this.props.rows);
-
-            for (let highlight of gameState)
-            {
-                new_highlighted[highlight[1]][highlight[0]] = 1;
-            }
-
-            this.setState({active: false, highlighted: new_highlighted});
-
-            let chip = this.state.board[gameState[0][0]][gameState[0][1]];
-            console.log("The winner is " + chip);
-        }
-
-        this.setState({board: newBoard, maximizingPlayer: !this.state.maximizingPlayer})
+        this.props.updateBoard(move, i);
     }
 
     render()
@@ -125,7 +417,7 @@ class Column extends React.Component
 
         if (tile === 1)
         {
-            if (this.props.maxIsRed)
+            if (this.props.redFirst)
             {
                 className += "-red";
             }
@@ -136,7 +428,7 @@ class Column extends React.Component
         }
         else if (tile === -1)
         {
-            if (this.props.maxIsRed)
+            if (this.props.redFirst)
             {
                 className += "-yellow";
             }
@@ -272,4 +564,4 @@ function min(x1, x2)
         return x2;
 }
 
-ReactDom.render(<Game rows={6} columns={7} board={generateBoard(6,7)} />, document.getElementById("root"));
+ReactDom.render(<Main />, document.getElementById("root"));
