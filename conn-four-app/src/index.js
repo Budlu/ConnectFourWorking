@@ -19,6 +19,8 @@ class Main extends React.Component
         this.updateBoard = this.updateBoard.bind(this);
         this.updateStatus = this.updateStatus.bind(this);
         this.restartGame = this.restartGame.bind(this);
+        this.randomMove = this.randomMove.bind(this);
+        this.jump = this.jump.bind(this);
 
         this.state = {
             rows: 6,
@@ -26,13 +28,16 @@ class Main extends React.Component
             gameActive: false,
             board: generateBoard(6,7),
             highlighted: generateBoard(7, 6),
+            emptyHighlight: generateBoard(7, 6),
+            highlightCopy: generateBoard(7, 6),
             maximizingPlayer: true,
             pvp: true,
             playerFirst: true,
             redFirst: true,
             gameOver: false,
             playerCanMove: true,
-            status: "Pick your settings"
+            status: "Pick your settings",
+            history: []
         }
     }
 
@@ -53,7 +58,9 @@ class Main extends React.Component
 
     startGame()
     {
-        this.setState({gameActive: true, playerCanMove: this.state.playerFirst}, this.startCallback);
+        let newHistory = this.state.history;
+        newHistory.push(this.state.board);
+        this.setState({gameActive: true, playerCanMove: this.state.playerFirst, history: newHistory}, this.startCallback);
     }
 
     startCallback()
@@ -78,14 +85,18 @@ class Main extends React.Component
         else
             chip = -1;
 
-        let newBoard = this.state.board.slice();
+        let newBoard = JSON.parse(JSON.stringify(this.state.board));
         newBoard[i][k] = chip;
+
+        let newHistory = this.state.history;
+        newHistory.push(newBoard);
+        this.setState({history: newHistory});
 
         let gameState = checkGameOver(newBoard, i, k);
 
         if (gameState === 2)
         {
-            this.setState({board: newBoard, maximizingPlayer: !this.state.maximizingPlayer, gameActive: false, gameOver: true, stats: "It's a draw"});
+            this.setState({board: newBoard, maximizingPlayer: !this.state.maximizingPlayer, gameActive: false, gameOver: true, status: "It's a draw"});
             return;
         }
         else if (gameState !== 0)
@@ -97,7 +108,8 @@ class Main extends React.Component
                 new_highlighted[highlight[1]][highlight[0]] = 1;
             }
 
-            this.setState({board: newBoard, maximizingPlayer: !this.state.maximizingPlayer, gameActive: false, gameOver: true, highlighted: new_highlighted, status: "The winner is " + chip});
+            let highlightCopy = JSON.parse(JSON.stringify(new_highlighted));
+            this.setState({board: newBoard, maximizingPlayer: !this.state.maximizingPlayer, gameActive: false, gameOver: true, highlighted: new_highlighted, highlightCopy: highlightCopy, status: "The winner is " + chip});
 
             return;
         }
@@ -141,7 +153,7 @@ class Main extends React.Component
 
     restartGame()
     {
-        this.setState({gameActive: false, board: generateBoard(6,7), highlighted: generateBoard(7,6), maximizingPlayer: true, gameOver: false, playerCanMove: true, playerFirst: true, status: "Pick your settings"});
+        this.setState({gameActive: false, board: generateBoard(6,7), highlighted: generateBoard(7,6), highlightCopy: generateBoard(7, 6), maximizingPlayer: true, gameOver: false, playerCanMove: true, playerFirst: true, status: "Pick your settings", history: []});
     }
 
     computerMove()
@@ -152,7 +164,24 @@ class Main extends React.Component
         fetch("http://localhost:5000/percent", options)
         .then(response => response.json())
         .then(data => { this.moveFromColumn(data.best) } )
-        .then(final => { this.setState({playerCanMove: true}) } );
+        .then(final => { this.setState({playerCanMove: true}) } )
+        .catch(error => { this.randomMove() } );
+    }
+
+    randomMove()
+    {
+        let validMoves = [];
+
+        for (let k = 0; k < this.state.board[0].length; k++)
+        {
+            if (this.state.board[0][k] === 0)
+                validMoves.push(k);
+        }
+
+        let index = Math.floor(Math.random() * validMoves.length);
+
+        this.moveFromColumn(index);
+        this.setState({playerCanMove: true});
     }
 
     moveFromColumn(k)
@@ -173,13 +202,25 @@ class Main extends React.Component
         this.updateBoard(i, k);
     }
 
+    jump(i)
+    {
+        if (i === this.state.history.length - 1)
+        {
+            this.setState({board: this.state.history[i], highlighted: this.state.highlightCopy})
+        }
+        else
+        {
+            this.setState({board: this.state.history[i], highlighted: this.state.emptyHighlight});
+        }
+    }
+
     render()
     {
         return (
             <div className="content">
                 <div className="column-1">
                     <Menu pvpMode={this.pvpMode} playerFirst={this.playerFirst} redFirst={this.redFirst} startGame={this.startGame} restartGame={this.restartGame} />
-                    <Analysis visible={this.state.gameOver} />
+                    <Analysis visible={this.state.gameOver} history={this.state.history} jump={this.jump} />
                 </div>
                 <div className="column-2">
                     <h2>{this.state.status}</h2>
@@ -340,13 +381,48 @@ class Menu extends React.Component
 
 class Analysis extends React.Component
 {
+    constructor(props)
+    {
+        super(props);
+
+        this.startAnalysis = this.startAnalysis.bind(this);
+
+        this.state = {
+            started: false
+        }
+    }
 
     render()
     {
-        if (this.props.visible)
-            return 0;
+        if (this.props.visible && !this.state.started)
+            return <button onClick={this.startAnalysis}>Start Analysis</button>;
+        else if (this.props.visible)
+        {
+            let elements = this.props.history.map((board, step) => {
+                if (step === 0)
+                {
+                    return (
+                        <li key={step}>
+                            <button onClick={() => this.props.jump(step)}>Start</button>
+                        </li>
+                    )
+                }
+                return (
+                    <li key={step}>
+                        <button onClick={() => this.props.jump(step)}>Move {step}</button>
+                    </li>
+                );
+            });
+
+            return <div className="analysis">{elements}</div>;
+        }
         else
             return "";
+    }
+
+    startAnalysis()
+    {
+        this.setState({started: true});
     }
 }
 
