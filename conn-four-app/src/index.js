@@ -14,13 +14,16 @@ class Main extends React.Component
 
         this.startGame = this.startGame.bind(this);
         this.startCallback = this.startCallback.bind(this);
+        this.handleData = this.handleData.bind(this);
         this.moveFromColumn = this.moveFromColumn.bind(this);
         this.computerMove = this.computerMove.bind(this);
         this.updateBoard = this.updateBoard.bind(this);
+        this.updateHistory = this.updateHistory.bind(this);
         this.updateStatus = this.updateStatus.bind(this);
         this.restartGame = this.restartGame.bind(this);
         this.randomMove = this.randomMove.bind(this);
         this.jump = this.jump.bind(this);
+        this.startAnalysis = this.startAnalysis.bind(this)
 
         this.state = {
             rows: 6,
@@ -37,7 +40,9 @@ class Main extends React.Component
             gameOver: false,
             playerCanMove: true,
             status: "Pick your settings",
-            history: []
+            history: [{"board": generateBoard(6, 7)}],
+            analysis: false,
+            index: 0
         }
     }
 
@@ -58,9 +63,7 @@ class Main extends React.Component
 
     startGame()
     {
-        let newHistory = this.state.history;
-        newHistory.push(this.state.board);
-        this.setState({gameActive: true, playerCanMove: this.state.playerFirst, history: newHistory}, this.startCallback);
+        this.setState({gameActive: true, playerCanMove: this.state.playerFirst}, this.startCallback);
     }
 
     startCallback()
@@ -89,7 +92,7 @@ class Main extends React.Component
         newBoard[i][k] = chip;
 
         let newHistory = this.state.history;
-        newHistory.push(newBoard);
+        newHistory.push({"board": newBoard});
         this.setState({history: newHistory});
 
         let gameState = checkGameOver(newBoard, i, k);
@@ -153,7 +156,7 @@ class Main extends React.Component
 
     restartGame()
     {
-        this.setState({gameActive: false, board: generateBoard(6,7), highlighted: generateBoard(7,6), highlightCopy: generateBoard(7, 6), maximizingPlayer: true, gameOver: false, playerCanMove: true, playerFirst: true, status: "Pick your settings", history: []});
+        this.setState({gameActive: false, board: generateBoard(6,7), highlighted: generateBoard(7,6), highlightCopy: generateBoard(7, 6), maximizingPlayer: true, gameOver: false, playerCanMove: true, playerFirst: true, status: "Pick your settings", history: [{"board": generateBoard(6, 7)}], analysis: false, index: 0});
     }
 
     computerMove()
@@ -163,9 +166,18 @@ class Main extends React.Component
 	
         fetch("http://localhost:5000/percent", options)
         .then(response => response.json())
-        .then(data => { this.moveFromColumn(data.best) } )
-        .then(final => { this.setState({playerCanMove: true}) } )
+        .then(data => { this.handleData(data) } )
         .catch(error => { this.randomMove() } );
+    }
+
+    handleData(data)
+    {
+        let updatedHistory = this.state.history;
+        updatedHistory[updatedHistory.length - 1]["best"] = data.best;
+        updatedHistory[updatedHistory.length - 1]["percent"] = data.percent;
+
+        this.moveFromColumn(data.best);
+        this.setState({history: updatedHistory, playerCanMove: true})
     }
 
     randomMove()
@@ -206,12 +218,41 @@ class Main extends React.Component
     {
         if (i === this.state.history.length - 1)
         {
-            this.setState({board: this.state.history[i], highlighted: this.state.highlightCopy})
+            this.setState({board: this.state.history[i]["board"], highlighted: this.state.highlightCopy, index: i})
         }
         else
         {
-            this.setState({board: this.state.history[i], highlighted: this.state.emptyHighlight});
+            this.setState({board: this.state.history[i]["board"], highlighted: this.state.emptyHighlight, index: i});
         }
+
+        if (this.state.history[i]["percent"] != null)
+        {
+            console.log(this.state.history[i]["percent"])
+            console.log(this.state.history[i]["best"]);
+        }
+        else
+        {
+            let options = {method: 'POST', mode: 'cors', headers: {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, body: JSON.stringify(this.state.history[i]["board"])};
+
+            fetch("http://localhost:5000/percent", options)
+            .then(response => response.json())
+            .then(data => { this.updateHistory(data, i) } )
+            .catch(error => { console.log("Data unavailable") } );
+        }
+    }
+
+    updateHistory(data, i)
+    {
+        let newHistory = this.state.history;
+        newHistory[i]["percent"] = data["percent"];
+        newHistory[i]["best"] = data["best"];
+
+        this.setState({history: newHistory});
+    }
+
+    startAnalysis()
+    {
+        this.setState({analysis: true})
     }
 
     render()
@@ -220,11 +261,11 @@ class Main extends React.Component
             <div className="content">
                 <div className="column-1">
                     <Menu pvpMode={this.pvpMode} playerFirst={this.playerFirst} redFirst={this.redFirst} startGame={this.startGame} restartGame={this.restartGame} />
-                    <Analysis visible={this.state.gameOver} history={this.state.history} jump={this.jump} />
+                    <Analysis visible={this.state.gameOver} history={this.state.history} jump={this.jump} startAnalysis={this.startAnalysis} started={this.state.analysis} />
                 </div>
                 <div className="column-2">
                     <h2>{this.state.status}</h2>
-                    <Game rows={6} columns={7} board={this.state.board} highlighted={this.state.highlighted} updateBoard={this.updateBoard} active={this.state.gameActive} redFirst={this.state.redFirst} playerMove={this.state.playerCanMove} />
+                    <Game rows={6} columns={7} board={this.state.board} highlighted={this.state.highlighted} updateBoard={this.updateBoard} active={this.state.gameActive} redFirst={this.state.redFirst} playerMove={this.state.playerCanMove} analysis={this.state.analysis} p1Height={this.state.history[this.state.index]["percent"]} />
                 </div>
             </div>
         );
@@ -381,21 +422,10 @@ class Menu extends React.Component
 
 class Analysis extends React.Component
 {
-    constructor(props)
-    {
-        super(props);
-
-        this.startAnalysis = this.startAnalysis.bind(this);
-
-        this.state = {
-            started: false
-        }
-    }
-
     render()
     {
-        if (this.props.visible && !this.state.started)
-            return <button onClick={this.startAnalysis}>Start Analysis</button>;
+        if (this.props.visible && !this.props.started)
+            return <button onClick={this.props.startAnalysis}>Start Analysis</button>;
         else if (this.props.visible)
         {
             let elements = this.props.history.map((board, step) => {
@@ -431,6 +461,7 @@ class Game extends React.Component
     constructor(props)
     {
         super(props);
+
         this.state = {
             rows: props.rows,
             columns: props.columns,
@@ -487,6 +518,7 @@ class Game extends React.Component
         this.props.updateBoard(move, i);
     }
 
+
     render()
     {
         let elements = [];
@@ -495,7 +527,49 @@ class Game extends React.Component
             elements.push(this.renderColumn(i));
         }
 
-        return <div className="game">{elements}</div>;
+        let height = -1;
+        if (this.props.p1Height !== undefined)
+        {
+            if (this.props.redFirst)
+            {
+                height = this.props.p1Height;
+            }
+            else
+            {
+                height = 100 - this.props.p1Height;
+            }
+        }
+
+        if (!this.props.analysis)
+        {
+            return (
+                <div className="game">
+                    {elements}
+                </div>
+            );
+        }
+        else if (height === -1)
+        {
+            return (
+                <div className="game">
+                    <div className="blank-box">
+                        <div className="eval-red" style={{height: 0 + '%'}}></div>
+                    </div>
+                    {elements}
+                </div>
+            );
+        }
+        else
+        {
+            return (
+                <div className="game">
+                    <div className="eval-box">
+                        <div className="eval-red" style={{height: height + '%'}}></div>
+                    </div>
+                    {elements}
+                </div>
+            );
+        }
     }
 }
 

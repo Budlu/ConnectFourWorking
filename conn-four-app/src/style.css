@@ -7,6 +7,28 @@
     justify-content: center;
 }
 
+.eval-box {
+    height: 766px;
+    width: 20px;
+    border: 1px solid black;
+    margin-top: 17px;
+    margin-right: -21px;
+    background-color: yellow;
+}
+
+.blank-box {
+    height: 766px;
+    width: 20px;
+    border: 1px solid black;
+    margin-top: 17px;
+    margin-right: -21px;
+}
+
+.eval-red {
+    background-color: red;
+    transition: height 1s;
+}
+
 .column-1 {
     width: 25%;
 }
