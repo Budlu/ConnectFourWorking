@@ -130,27 +130,13 @@ class Main extends React.Component
         let redMessage = "Red's move";
         let yellowMessage = "Yellow's move";
 
-        if (this.state.maximizingPlayer)
+        if (redMove(this.state.maximizingPlayer, this.state.redFirst))
         {
-            if (this.state.redFirst)
-            {
-                this.setState({status: redMessage});
-            }
-            else
-            {
-                this.setState({status: yellowMessage});
-            }
+            this.setState({status: redMessage});
         }
         else
         {
-            if (this.state.redFirst)
-            {
-                this.setState({status: yellowMessage});
-            }
-            else
-            {
-                this.setState({status: redMessage});
-            }
+            this.setState({status: yellowMessage});
         }
     }
 
@@ -225,7 +211,7 @@ class Main extends React.Component
             this.setState({board: this.state.history[i]["board"], highlighted: this.state.emptyHighlight, index: i});
         }
 
-        if (this.state.history[i]["percent"] != null)
+        if (this.state.history[i]["percent"] !== undefined)
         {
             console.log(this.state.history[i]["percent"])
             console.log(this.state.history[i]["best"]);
@@ -372,42 +358,36 @@ class Menu extends React.Component
 
     playerVersusPlayer()
     {
-        console.log("PVP");
         this.props.pvpMode(true);
         this.whichColor(this.backPVPPVC);
     }
 
     playerVersusComputer()
     {
-        console.log("PVC");
         this.props.pvpMode(false);
         this.whichPlayer();
     }
 
     playerFirstMenu()
     {
-        console.log("Player first");
         this.props.playerFirst(true);
         this.whichColor(this.whichPlayer);
     }
 
     computerFirstMenu()
     {
-        console.log("Computer first");
         this.props.playerFirst(false);
         this.whichColor(this.whichPlayer);
     }
 
     redFirstMenu()
     {
-        console.log("Red first");
         this.props.redFirst(true);
         this.startGame();
     }
 
     yellowFirstMenu()
     {
-        console.log("Yellow first");
         this.props.redFirst(false);
         this.startGame();
     }
@@ -464,9 +444,7 @@ class Game extends React.Component
 
         this.state = {
             rows: props.rows,
-            columns: props.columns,
-            maximizingPlayer: true,
-            highlighted: generateBoard(props.columns, props.rows)
+            columns: props.columns
         };
     }
 
@@ -544,17 +522,6 @@ class Game extends React.Component
         {
             return (
                 <div className="game">
-                    {elements}
-                </div>
-            );
-        }
-        else if (height === -1)
-        {
-            return (
-                <div className="game">
-                    <div className="blank-box">
-                        <div className="eval-red" style={{height: 0 + '%'}}></div>
-                    </div>
                     {elements}
                 </div>
             );
@@ -737,6 +704,22 @@ function min(x1, x2)
         return x1;
     else
         return x2;
+}
+
+function redMove(maximizingPlayer, redFirst)
+{
+    if (redFirst)
+    {
+        if (maximizingPlayer)
+            return true;
+        return false;
+    }
+    else
+    {
+        if (maximizingPlayer)
+            return false;
+        return true;
+    }
 }
 
 ReactDom.render(<Main />, document.getElementById("root"));

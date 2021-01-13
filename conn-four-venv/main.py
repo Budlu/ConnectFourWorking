@@ -5,6 +5,7 @@ from flask_cors import CORS
 import json
 import copy
 import pickle
+import atexit
 
 SEARCH_DEPTH = 6
 WIN_VAL = 200
@@ -116,6 +117,12 @@ def minimax(board, drop_height, depth, alpha, beta, maximizing_player, last_boar
                 break
             
         return min_eval, selected_depth
+
+def get_val(integer):
+    for key in list(HASHES.keys()):
+        if integer == key:
+            return HASHES[integer]
+    return None
 
 def evaluate(board):
     three_score = 0
@@ -333,9 +340,9 @@ def board_to_int_fast(last_board, action, player):
     
     return ret_val
 
-def write_hashes(hashes):
+def write_hashes():
     with open(FILENAME, "wb") as f:
-        pickle.dump(hashes, f)
+        pickle.dump(HASHES, f)
 
 FILENAME = "val_hashes.p"
 HASHES = {}
@@ -358,10 +365,9 @@ def get_percent():
     player = get_turn(board)
     percent = player_one_win_percentage(board, drop_height, SEARCH_DEPTH, player)
     move = get_best_move(board, drop_height, player)
-    
-    write_hashes(HASHES)
 
     return json.dumps({"percent": percent, "best": move})
 
 if __name__ == '__main__':
+    atexit.register(write_hashes)
     app.run()
