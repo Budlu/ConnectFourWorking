@@ -118,12 +118,6 @@ def minimax(board, drop_height, depth, alpha, beta, maximizing_player, last_boar
             
         return min_eval, selected_depth
 
-def get_val(integer):
-    for key in list(HASHES.keys()):
-        if integer == key:
-            return HASHES[integer]
-    return None
-
 def evaluate(board):
     three_score = 0
     threats = np.zeros((6,7))

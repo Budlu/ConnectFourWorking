@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDom from "react-dom";
 import "./style.css";
+import arrow from "./Arrow.png"
 
 class Main extends React.Component
 {
@@ -42,7 +43,8 @@ class Main extends React.Component
             status: "Pick your settings",
             history: [{"board": generateBoard(6, 7)}],
             analysis: false,
-            index: 0
+            index: 0,
+            lastMove: false
         }
     }
 
@@ -142,7 +144,7 @@ class Main extends React.Component
 
     restartGame()
     {
-        this.setState({gameActive: false, board: generateBoard(6,7), highlighted: generateBoard(7,6), highlightCopy: generateBoard(7, 6), maximizingPlayer: true, gameOver: false, playerCanMove: true, playerFirst: true, status: "Pick your settings", history: [{"board": generateBoard(6, 7)}], analysis: false, index: 0});
+        this.setState({gameActive: false, board: generateBoard(6,7), highlighted: generateBoard(7,6), highlightCopy: generateBoard(7, 6), maximizingPlayer: true, gameOver: false, playerCanMove: true, playerFirst: true, status: "Pick your settings", history: [{"board": generateBoard(6, 7)}], analysis: false, index: 0, lastMove: false});
     }
 
     computerMove()
@@ -204,11 +206,11 @@ class Main extends React.Component
     {
         if (i === this.state.history.length - 1)
         {
-            this.setState({board: this.state.history[i]["board"], highlighted: this.state.highlightCopy, index: i})
+            this.setState({board: this.state.history[i]["board"], highlighted: this.state.highlightCopy, index: i, lastMove: true})
         }
         else
         {
-            this.setState({board: this.state.history[i]["board"], highlighted: this.state.emptyHighlight, index: i});
+            this.setState({board: this.state.history[i]["board"], highlighted: this.state.emptyHighlight, index: i, lastMove: false});
         }
 
         if (this.state.history[i]["percent"] !== undefined)
@@ -251,7 +253,7 @@ class Main extends React.Component
                 </div>
                 <div className="column-2">
                     <h2>{this.state.status}</h2>
-                    <Game rows={6} columns={7} board={this.state.board} highlighted={this.state.highlighted} updateBoard={this.updateBoard} active={this.state.gameActive} redFirst={this.state.redFirst} playerMove={this.state.playerCanMove} analysis={this.state.analysis} p1Height={this.state.history[this.state.index]["percent"]} />
+                    <Game rows={6} columns={7} board={this.state.board} highlighted={this.state.highlighted} updateBoard={this.updateBoard} active={this.state.gameActive} redFirst={this.state.redFirst} playerMove={this.state.playerCanMove} analysis={this.state.analysis} p1Height={this.state.history[this.state.index]["percent"]} best={this.state.history[this.state.index]["best"]} lastMove={this.state.lastMove} />
                 </div>
             </div>
         );
@@ -462,7 +464,7 @@ class Game extends React.Component
 
     renderColumn(i)
     {
-        let column = <Column index={i} total_height={this.props.rows} column={this.getColumn(i)} highlighted={this.props.highlighted[i]} redFirst={this.props.redFirst} />;
+        let column = <Column index={i} total_height={this.props.rows} column={this.getColumn(i)} highlighted={this.props.highlighted[i]} redFirst={this.props.redFirst} best={this.props.best} analysis={this.props.analysis} lastMove={this.props.lastMove} />;
         return <ul key={i} className="column"><button onClick={() => this.debugClick(i)}>{column}</button></ul>;
     }
 
@@ -560,24 +562,16 @@ class Column extends React.Component
         if (tile === 1)
         {
             if (this.props.redFirst)
-            {
                 className += "-red";
-            }
             else
-            {
                 className += "-yellow";
-            }
         }
         else if (tile === -1)
         {
             if (this.props.redFirst)
-            {
                 className += "-yellow";
-            }
             else
-            {
                 className += "-red";
-            }
         }
 
         return <Tile key={i} class={className} highlighted={this.props.highlighted[i]} />;
@@ -586,12 +580,34 @@ class Column extends React.Component
     render()
     {
         let elements = [];
+
+        if (this.props.analysis && this.props.best === this.props.index && !this.props.lastMove)
+            elements.push(<Arrow visible={true} />);
+        else
+            elements.push(<Arrow visible={false} />);
+
         for (let i = 0; i < this.props.total_height; i++)
         {
             elements.push(this.renderTile(i));
         }
 
         return elements;
+    }
+}
+
+function Arrow(props)
+{
+    if (props.visible)
+    {
+        return (
+            <img src={arrow} className="arrow" alt=""></img>
+        );
+    }
+    else
+    {
+        return (
+            <img src={arrow} className="arrow-invisible" alt=""></img>
+        );
     }
 }
 
