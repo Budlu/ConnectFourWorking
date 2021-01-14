@@ -4,6 +4,8 @@ import "./style.css";
 import arrow from "./Arrow.png";
 import dropSound from "./drop.mp3";
 
+const IP = "http://localhost:5000/percent";
+
 class Main extends React.Component
 {
     constructor(props)
@@ -118,13 +120,20 @@ class Main extends React.Component
             }
 
             let winner = "";
+            let color = "";
             if (redMove(this.state.maximizingPlayer, this.state.redFirst))
+            {
                 winner = "Red";
+                color = "red";
+            }
             else
+            {
                 winner = "Yellow";
+                color = "#ccc200";
+            }
 
             let highlightCopy = JSON.parse(JSON.stringify(new_highlighted));
-            this.setState({board: newBoard, maximizingPlayer: !this.state.maximizingPlayer, gameActive: false, gameOver: true, highlighted: new_highlighted, highlightCopy: highlightCopy, status: winner + " wins!"});
+            this.setState({board: newBoard, maximizingPlayer: !this.state.maximizingPlayer, gameActive: false, gameOver: true, highlighted: new_highlighted, highlightCopy: highlightCopy, status: <span style={{color: color}}>{winner} wins!</span>});
             playDrop();
 
             return;
@@ -141,8 +150,8 @@ class Main extends React.Component
 
     updateStatus()
     {
-        let redMessage = "Red's move";
-        let yellowMessage = "Yellow's move";
+        let redMessage = <span style={{color: "red"}}>Red's move</span>;
+        let yellowMessage = <span style={{color: "#ccc200"}}>Yellow's move</span>;
 
         if (redMove(this.state.maximizingPlayer, this.state.redFirst))
         {
@@ -164,7 +173,7 @@ class Main extends React.Component
         console.log(this.state.playerCanMove);
         let options = {method: 'POST', mode: 'cors', headers: {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, body: JSON.stringify(this.state.board)};
 	
-        fetch("http://localhost:5000/percent", options)
+        fetch(IP, options)
         .then(response => response.json())
         .then(data => { this.handleData(data) } )
         .catch(error => { this.randomMove() } );
@@ -237,7 +246,7 @@ class Main extends React.Component
         {
             let options = {method: 'POST', mode: 'cors', headers: {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, body: JSON.stringify(this.state.history[i]["board"])};
 
-            fetch("http://localhost:5000/percent", options)
+            fetch(IP, options)
             .then(response => response.json())
             .then(data => { this.updateHistory(data, i) } )
             .catch(error => { this.setState({connected: false}) } );
@@ -609,9 +618,9 @@ class Column extends React.Component
         let elements = [];
 
         if (this.props.analysis && this.props.best === this.props.index && !this.props.lastMove)
-            elements.push(<Arrow visible={true} />);
+            elements.push(<Arrow visible={true} key={this.props.total_height} />);
         else
-            elements.push(<Arrow visible={false} />);
+            elements.push(<Arrow visible={false} key={this.props.total_height} />);
 
         for (let i = 0; i < this.props.total_height; i++)
         {
