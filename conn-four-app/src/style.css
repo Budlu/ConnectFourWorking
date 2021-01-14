@@ -43,7 +43,7 @@
     height: 766px;
     width: 20px;
     border: 1px solid black;
-    margin-top: 17px;
+    margin-top: 56px;
     margin-right: -21px;
 }
 
@@ -62,6 +62,7 @@
 
 .column-2 h2 {
     text-align: center;
+    margin-left: 40px;
 }
 
 .analysis {
