@@ -4,8 +4,6 @@ import "./style.css";
 import arrow from "./Arrow.png";
 import dropSound from "./drop.mp3";
 
-let sound = new drop(dropSound);
-
 class Main extends React.Component
 {
     constructor(props)
@@ -106,7 +104,7 @@ class Main extends React.Component
         if (gameState === 2)
         {
             this.setState({board: newBoard, maximizingPlayer: !this.state.maximizingPlayer, gameActive: false, gameOver: true, status: "It's a draw"});
-            sound.play();
+            playDrop();
 
             return;
         }
@@ -127,13 +125,13 @@ class Main extends React.Component
 
             let highlightCopy = JSON.parse(JSON.stringify(new_highlighted));
             this.setState({board: newBoard, maximizingPlayer: !this.state.maximizingPlayer, gameActive: false, gameOver: true, highlighted: new_highlighted, highlightCopy: highlightCopy, status: winner + " wins!"});
-            sound.play();
+            playDrop();
 
             return;
         }
 
         this.setState({board: newBoard, maximizingPlayer: !this.state.maximizingPlayer}, this.updateStatus);
-        sound.play();
+        playDrop();
 
         if (!this.state.pvp && this.state.playerCanMove)
         {
@@ -219,7 +217,7 @@ class Main extends React.Component
     jump(i)
     {
         if (i > this.state.index)
-            sound.play();
+            playDrop();
 
         if (i === this.state.history.length - 1)
         {
@@ -767,15 +765,25 @@ function redMove(maximizingPlayer, redFirst)
     }
 }
 
+let sound = new drop(dropSound);
+let soundElement = document.getElementById("sound");
+
 function drop(src) {
     this.sound = document.createElement("audio");
     this.sound.src = src;
     this.sound.setAttribute("preload", "auto");
     this.sound.setAttribute("controls", "none");
+    this.sound.setAttribute("id", "sound")
     this.sound.style.display = "none";
     document.body.appendChild(this.sound);
     this.play = function() { this.sound.play(); }
     this.stop = function() { this.sound.pause(); }
+}
+
+function playDrop()
+{
+    soundElement.load();
+    soundElement.play();
 }
 
 ReactDom.render(<Main />, document.getElementById("root"));
