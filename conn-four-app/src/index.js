@@ -1,7 +1,10 @@
 import React from "react";
 import ReactDom from "react-dom";
 import "./style.css";
-import arrow from "./Arrow.png"
+import arrow from "./Arrow.png";
+import dropSound from "./drop.mp3";
+
+let sound = new drop(dropSound);
 
 class Main extends React.Component
 {
@@ -96,13 +99,15 @@ class Main extends React.Component
 
         let newHistory = this.state.history;
         newHistory.push({"board": newBoard});
-        this.setState({history: newHistory});
+        this.setState({history: newHistory, index: this.state.index + 1});
 
         let gameState = checkGameOver(newBoard, i, k);
 
         if (gameState === 2)
         {
             this.setState({board: newBoard, maximizingPlayer: !this.state.maximizingPlayer, gameActive: false, gameOver: true, status: "It's a draw"});
+            sound.play();
+
             return;
         }
         else if (gameState !== 0)
@@ -122,11 +127,13 @@ class Main extends React.Component
 
             let highlightCopy = JSON.parse(JSON.stringify(new_highlighted));
             this.setState({board: newBoard, maximizingPlayer: !this.state.maximizingPlayer, gameActive: false, gameOver: true, highlighted: new_highlighted, highlightCopy: highlightCopy, status: winner + " wins!"});
+            sound.play();
 
             return;
         }
 
         this.setState({board: newBoard, maximizingPlayer: !this.state.maximizingPlayer}, this.updateStatus);
+        sound.play();
 
         if (!this.state.pvp && this.state.playerCanMove)
         {
@@ -211,6 +218,9 @@ class Main extends React.Component
 
     jump(i)
     {
+        if (i > this.state.index)
+            sound.play();
+
         if (i === this.state.history.length - 1)
         {
             this.setState({board: this.state.history[i]["board"], highlighted: this.state.highlightCopy, index: i, lastMove: true})
@@ -755,6 +765,17 @@ function redMove(maximizingPlayer, redFirst)
             return false;
         return true;
     }
+}
+
+function drop(src) {
+    this.sound = document.createElement("audio");
+    this.sound.src = src;
+    this.sound.setAttribute("preload", "auto");
+    this.sound.setAttribute("controls", "none");
+    this.sound.style.display = "none";
+    document.body.appendChild(this.sound);
+    this.play = function() { this.sound.play(); }
+    this.stop = function() { this.sound.pause(); }
 }
 
 ReactDom.render(<Main />, document.getElementById("root"));
