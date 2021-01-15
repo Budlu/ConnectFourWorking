@@ -278,16 +278,16 @@ class Main extends React.Component
         if (event.key === "ArrowUp" || event.key === "ArrowRight" || event.key === "w" || event.key === "d")
         {
             if (this.state.analysis && this.state.index < (this.state.history.length - 1))
-            {
                 this.jump(this.state.index + 1);
-            }
+
+            event.preventDefault();
         }
         else if (event.key === "ArrowDown" || event.key === "ArrowLeft" || event.key === "s" || event.key === "a")
         {
             if (this.state.analysis && this.state.index > 0)
-            {
                 this.jump(this.state.index - 1);
-            }
+
+            event.preventDefault();
         }
     }
 
@@ -797,8 +797,7 @@ function redMove(maximizingPlayer, redFirst)
     }
 }
 
-let sound = new drop(dropSound);
-let soundElement = document.getElementById("sound");
+let soundElement = new drop(dropSound);
 
 function drop(src) {
     this.sound = document.createElement("audio");
@@ -814,8 +813,8 @@ function drop(src) {
 
 function playDrop()
 {
-    soundElement.load();
-    soundElement.play();
+    soundElement.sound.load();
+    soundElement.sound.play();
 }
 
 ReactDom.render(<Main />, document.getElementById("root"));
