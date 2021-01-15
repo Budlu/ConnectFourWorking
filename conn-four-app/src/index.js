@@ -28,6 +28,9 @@ class Main extends React.Component
         this.randomMove = this.randomMove.bind(this);
         this.jump = this.jump.bind(this);
         this.startAnalysis = this.startAnalysis.bind(this)
+        this.keyDown = this.keyDown.bind(this);
+
+        document.onkeydown = this.keyDown;
 
         this.state = {
             rows: 6,
@@ -268,10 +271,30 @@ class Main extends React.Component
         this.jump(this.state.history.length - 1);
     }
 
+    keyDown(e)
+    {
+        let event = window.event ? window.event : e;
+
+        if (event.key === "ArrowUp" || event.key === "ArrowRight" || event.key === "w" || event.key === "d")
+        {
+            if (this.state.analysis && this.state.index < (this.state.history.length - 1))
+            {
+                this.jump(this.state.index + 1);
+            }
+        }
+        else if (event.key === "ArrowDown" || event.key === "ArrowLeft" || event.key === "s" || event.key === "a")
+        {
+            if (this.state.analysis && this.state.index > 0)
+            {
+                this.jump(this.state.index - 1);
+            }
+        }
+    }
+
     render()
     {
         return (
-            <div className="content">
+            <div className="content" >
                 <div className="column-1">
                     <Menu pvpMode={this.pvpMode} playerFirst={this.playerFirst} redFirst={this.redFirst} startGame={this.startGame} restartGame={this.restartGame} />
                     <Analysis visible={this.state.gameOver} history={this.state.history} jump={this.jump} startAnalysis={this.startAnalysis} started={this.state.analysis} />
