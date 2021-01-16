@@ -17,13 +17,12 @@ class Main extends React.Component
         this.redFirst = this.redFirst.bind(this);
 
         this.startGame = this.startGame.bind(this);
-        this.startCallback = this.startCallback.bind(this);
         this.handleData = this.handleData.bind(this);
         this.moveFromColumn = this.moveFromColumn.bind(this);
         this.computerMove = this.computerMove.bind(this);
         this.updateBoard = this.updateBoard.bind(this);
         this.updateHistory = this.updateHistory.bind(this);
-        this.updateStatus = this.updateStatus.bind(this);
+        this.updateGame = this.updateGame.bind(this);
         this.restartGame = this.restartGame.bind(this);
         this.randomMove = this.randomMove.bind(this);
         this.jump = this.jump.bind(this);
@@ -72,21 +71,7 @@ class Main extends React.Component
 
     startGame()
     {
-        this.setState({gameActive: true, playerCanMove: this.state.playerFirst}, this.startCallback);
-    }
-
-    startCallback()
-    {
-        this.updateStatus();
-
-        if (!this.state.pvp)
-        {
-            if (!this.state.playerFirst)
-            {
-                console.log("computer move");
-                this.computerMove();
-            }
-        }
+        this.setState({gameActive: true, playerCanMove: this.state.playerFirst}, this.updateGame);
     }
 
     updateBoard(i, k)
@@ -142,17 +127,18 @@ class Main extends React.Component
             return;
         }
 
-        this.setState({board: newBoard, maximizingPlayer: !this.state.maximizingPlayer}, this.updateStatus);
-        playDrop();
+        if (!this.state.pvp)
+            this.setState({board: newBoard, maximizingPlayer: !this.state.maximizingPlayer, playerCanMove: !this.state.playerCanMove}, this.updateGame);
+        else
+            this.setState({board: newBoard, maximizingPlayer: !this.state.maximizingPlayer}, this.updateGame);
 
-        if (!this.state.pvp && this.state.playerCanMove)
-        {
-            this.setState({playerCanMove: false}, this.computerMove);
-        }
+        playDrop();
     }
 
-    updateStatus()
+    updateGame()
     {
+        console.log(this.state.index);
+
         let redMessage = <span style={{color: "red"}}>Red's move</span>;
         let yellowMessage = <span style={{color: "#ccc200"}}>Yellow's move</span>;
 
@@ -164,6 +150,11 @@ class Main extends React.Component
         {
             this.setState({status: yellowMessage});
         }
+
+        if (!this.state.pvp && !this.state.playerCanMove)
+        {
+            this.computerMove();
+        }
     }
 
     restartGame()
@@ -173,7 +164,6 @@ class Main extends React.Component
 
     computerMove()
     {
-        console.log(this.state.playerCanMove);
         let options = {method: 'POST', mode: 'cors', headers: {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, body: JSON.stringify(this.state.board)};
 	
         fetch(IP, options)
@@ -184,12 +174,15 @@ class Main extends React.Component
 
     handleData(data)
     {
+        if (!this.state.gameActive)
+            return;
+
         let updatedHistory = this.state.history;
         updatedHistory[updatedHistory.length - 1]["best"] = data.best;
         updatedHistory[updatedHistory.length - 1]["percent"] = data.percent;
 
         this.moveFromColumn(data.best);
-        this.setState({history: updatedHistory, playerCanMove: true})
+        this.setState({history: updatedHistory})
     }
 
     randomMove()
@@ -205,7 +198,6 @@ class Main extends React.Component
         let index = Math.floor(Math.random() * validMoves.length);
 
         this.moveFromColumn(index);
-        this.setState({playerCanMove: true});
     }
 
     moveFromColumn(k)
@@ -275,14 +267,14 @@ class Main extends React.Component
     {
         let event = window.event ? window.event : e;
 
-        if (event.key === "ArrowUp" || event.key === "ArrowRight" || event.key === "w" || event.key === "d")
+        if (event.key === "ArrowDown" || event.key === "ArrowRight" || event.key === "s" || event.key === "d")
         {
             if (this.state.analysis && this.state.index < (this.state.history.length - 1))
                 this.jump(this.state.index + 1);
 
             event.preventDefault();
         }
-        else if (event.key === "ArrowDown" || event.key === "ArrowLeft" || event.key === "s" || event.key === "a")
+        else if (event.key === "ArrowUp" || event.key === "ArrowLeft" || event.key === "w" || event.key === "a")
         {
             if (this.state.analysis && this.state.index > 0)
                 this.jump(this.state.index - 1);
@@ -814,7 +806,8 @@ function drop(src) {
 function playDrop()
 {
     soundElement.sound.load();
-    soundElement.sound.play();
+    soundElement.sound.play()
+    .catch(error => {console.warn("Drop sound failed")});
 }
 
 ReactDom.render(<Main />, document.getElementById("root"));
