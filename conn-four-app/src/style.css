@@ -1,3 +1,8 @@
+body {
+    background-color: lightskyblue;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
 .content {
     display: flex;
 }
@@ -52,6 +57,30 @@
     transition: height 1s;
 }
 
+.menu {
+    font-size: 34px;
+}
+
+.container h1 {
+    margin: -10px;
+    padding: 20px;
+    margin-bottom: 10px;
+    background-color: lightblue;
+    text-align: center;
+}
+
+.menu button {
+    font-size: 24px;
+    background-color: lightgreen;
+    border-radius: 10px;
+}
+
+.menu button:hover {
+    font-size: 24px;
+    background-color: #67e267;
+    border-radius: 10px;
+}
+
 .column-1 {
     width: 25%;
 }
@@ -66,7 +95,12 @@
 }
 
 .analysis {
-    margin-top: 10px;
+    margin-top: 20%;
+    display: inline-flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    height: auto;
+    max-height: 32%;
 }
 
 .analysis li {
@@ -81,7 +115,22 @@
 .column button {
     outline: none;
     border: none;
-    background-color: white;
+    background-color: lightskyblue;
+}
+
+.analysis-button {
+    font-size: 28px;
+    width: 150px;
+    background-color: lightskyblue;
+    background-color: lightgreen;
+}
+
+.analysis-button-highlighted {
+    font-size: 28px;
+    width: 150px;
+    background-color: #67e267;
+    font-weight: bolder;
+    box-shadow: 0 0 0px 3px black inset;
 }
 
 .tile {
@@ -106,6 +155,7 @@
     margin-right: -25px;
     background-color: red;
     border-radius: 50%;
+
 }
 
 .tile-yellow {

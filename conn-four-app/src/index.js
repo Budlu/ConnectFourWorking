@@ -169,7 +169,7 @@ class Main extends React.Component
         fetch(IP, options)
         .then(response => response.json())
         .then(data => { this.handleData(data) } )
-        .catch(error => { this.randomMove() } );
+        .catch(error => { this.randomMove(); } );
     }
 
     handleData(data)
@@ -244,7 +244,7 @@ class Main extends React.Component
             fetch(IP, options)
             .then(response => response.json())
             .then(data => { this.updateHistory(data, i) } )
-            .catch(error => { this.setState({connected: false}) } );
+            .catch(error => { this.setState({connected: false}); } );
         }
     }
 
@@ -286,14 +286,17 @@ class Main extends React.Component
     render()
     {
         return (
-            <div className="content" >
-                <div className="column-1">
-                    <Menu pvpMode={this.pvpMode} playerFirst={this.playerFirst} redFirst={this.redFirst} startGame={this.startGame} restartGame={this.restartGame} />
-                    <Analysis visible={this.state.gameOver} history={this.state.history} jump={this.jump} startAnalysis={this.startAnalysis} started={this.state.analysis} />
-                </div>
-                <div className="column-2">
-                    <h2>{this.state.status}</h2>
-                    <Game rows={6} columns={7} board={this.state.board} highlighted={this.state.highlighted} updateBoard={this.updateBoard} active={this.state.gameActive} redFirst={this.state.redFirst} playerMove={this.state.playerCanMove} analysis={this.state.analysis} p1Height={this.state.history[this.state.index]["percent"]} best={this.state.history[this.state.index]["best"]} lastMove={this.state.lastMove} connected={this.state.connected} />
+            <div className="container">
+                <h1>Connect Four</h1>
+                <div className="content" >
+                    <div className="column-1">
+                        <Menu pvpMode={this.pvpMode} playerFirst={this.playerFirst} redFirst={this.redFirst} startGame={this.startGame} restartGame={this.restartGame} />
+                        <Analysis visible={this.state.gameOver} history={this.state.history} jump={this.jump} startAnalysis={this.startAnalysis} started={this.state.analysis} index={this.state.index} />
+                    </div>
+                    <div className="column-2">
+                        <h2>{this.state.status}</h2>
+                        <Game rows={6} columns={7} board={this.state.board} highlighted={this.state.highlighted} updateBoard={this.updateBoard} active={this.state.gameActive} redFirst={this.state.redFirst} playerMove={this.state.playerCanMove} analysis={this.state.analysis} p1Height={this.state.history[this.state.index]["percent"]} best={this.state.history[this.state.index]["best"]} lastMove={this.state.lastMove} connected={this.state.connected} />
+                    </div>
                 </div>
             </div>
         );
@@ -337,11 +340,10 @@ class Menu extends React.Component
         {
             return (
                 <div className="menu">
-                    <h1>Connect Four</h1>
-                    {this.state.prompt}
-                    <button onClick={() => this.state.buttonOneFunction()}>{this.state.buttonOneText}</button>
-                    <button onClick={() => this.state.buttonTwoFunction()}>{this.state.buttonTwoText}</button>
-                    <button onClick={() => this.state.backFunction()}>Back</button>
+                    {this.state.prompt}<br/>
+                    <button onClick={() => this.state.buttonOneFunction()}>{this.state.buttonOneText}</button><br/>
+                    <button onClick={() => this.state.buttonTwoFunction()}>{this.state.buttonTwoText}</button><br/>
+                    <button onClick={() => this.state.backFunction()}>Back</button><br/>
                 </div>
             );
         }
@@ -349,7 +351,6 @@ class Menu extends React.Component
         {
             return (
                 <div className="menu">
-                    <h1>Connect Four</h1>
                     <button onClick={() => this.restartGame()}>Restart Game</button>
                 </div>
             )
@@ -451,17 +452,22 @@ class Analysis extends React.Component
         else if (this.props.visible)
         {
             let elements = this.props.history.map((board, step) => {
+                let name = "analysis-button";
+
+                if (step === this.props.index)
+                    name += "-highlighted";
+
                 if (step === 0)
                 {
                     return (
                         <li key={step}>
-                            <button onClick={() => this.props.jump(step)}>Start</button>
+                            <button onClick={() => this.props.jump(step)} className={name} >Start</button>
                         </li>
                     )
                 }
                 return (
                     <li key={step}>
-                        <button onClick={() => this.props.jump(step)}>Move {step}</button>
+                        <button onClick={() => this.props.jump(step)} className={name} >Move {step}</button>
                     </li>
                 );
             });
