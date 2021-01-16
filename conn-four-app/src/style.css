@@ -134,67 +134,67 @@ body {
 }
 
 .tile {
-    height: 127px;
+    height: 128px;
     width: 128px;
     outline: 1px solid black;
     font-size: 64px;
     text-align: center;
     margin-top: 1px;
-    margin-left: -25px;
-    margin-right: -25px;
+    margin-left: -22px;
+    margin-right: -29px;
 }
 
 .tile-red {
-    height: 127px;
+    height: 128px;
     width: 128px;
     outline: 1px solid black;
     font-size: 64px;
     text-align: center;
     margin-top: 1px;
-    margin-left: -25px;
-    margin-right: -25px;
+    margin-left: -22px;
+    margin-right: -29px;
     background-color: red;
     border-radius: 50%;
 
 }
 
 .tile-yellow {
-    height: 127px;
+    height: 128px;
     width: 128px;
     outline: 1px solid black;
     font-size: 64px;
     text-align: center;
     margin-top: 1px;
-    margin-left: -25px;
-    margin-right: -25px;
+    margin-left: -22px;
+    margin-right: -29px;
     background-color: yellow;
     border-radius: 50%;
 }
 
 .tile-red-highlighted {
-    height: 127px;
+    height: 128px;
     width: 128px;
     outline: 1px solid black;
     box-shadow: 0 0 0px 4px black inset;
     font-size: 64px;
     text-align: center;
     margin-top: 1px;
-    margin-left: -25px;
-    margin-right: -25px;
+    margin-left: -22px;
+    margin-right: -29px;
     background-color: red;
     border-radius: 50%;
 }
 
 .tile-yellow-highlighted {
-    height: 127px;
+    height: 128px;
     width: 128px;
     outline: 1px solid black;
     box-shadow: 0 0 0px 4px black inset;
     font-size: 64px;
     text-align: center;
     margin-top: 1px;
-    margin-left: -25px;
-    margin-right: -25px;
+    margin-left: -22px;
+    margin-right: -29px;
     background-color: yellow;
     border-radius: 50%;
 }

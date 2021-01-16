@@ -187,6 +187,9 @@ class Main extends React.Component
 
     randomMove()
     {
+        if (!this.state.gameActive)
+            return;
+
         let validMoves = [];
 
         for (let k = 0; k < this.state.board[0].length; k++)
@@ -290,8 +293,8 @@ class Main extends React.Component
                 <h1>Connect Four</h1>
                 <div className="content" >
                     <div className="column-1">
-                        <Menu pvpMode={this.pvpMode} playerFirst={this.playerFirst} redFirst={this.redFirst} startGame={this.startGame} restartGame={this.restartGame} />
-                        <Analysis visible={this.state.gameOver} history={this.state.history} jump={this.jump} startAnalysis={this.startAnalysis} started={this.state.analysis} index={this.state.index} />
+                        <Menu pvpMode={this.pvpMode} playerFirst={this.playerFirst} redFirst={this.redFirst} startGame={this.startGame} restartGame={this.restartGame} visible={this.state.gameOver} started={this.state.analysis} startAnalysis={this.startAnalysis} />
+                        <Analysis visible={this.state.analysis} history={this.state.history} jump={this.jump} index={this.state.index} />
                     </div>
                     <div className="column-2">
                         <h2>{this.state.status}</h2>
@@ -344,6 +347,15 @@ class Menu extends React.Component
                     <button onClick={() => this.state.buttonOneFunction()}>{this.state.buttonOneText}</button><br/>
                     <button onClick={() => this.state.buttonTwoFunction()}>{this.state.buttonTwoText}</button><br/>
                     <button onClick={() => this.state.backFunction()}>Back</button><br/>
+                </div>
+            );
+        }
+        else if (this.props.visible && !this.props.started)
+        {
+            return (
+                <div className="menu">
+                    <button onClick={() => this.restartGame()}>Restart Game</button><br/>
+                    <button onClick={this.props.startAnalysis}>Start Analysis</button>
                 </div>
             );
         }
@@ -447,9 +459,7 @@ class Analysis extends React.Component
 {
     render()
     {
-        if (this.props.visible && !this.props.started)
-            return <button onClick={this.props.startAnalysis}>Start Analysis</button>;
-        else if (this.props.visible)
+        if (this.props.visible)
         {
             let elements = this.props.history.map((board, step) => {
                 let name = "analysis-button";
