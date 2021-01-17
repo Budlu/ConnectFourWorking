@@ -2,6 +2,7 @@ import React from "react";
 import ReactDom from "react-dom";
 import arrow from "./Arrow.png";
 import dropSound from "./drop.mp3";
+import clickSound from "./click.mp3";
 
 const IP = "http://localhost:5000/percent";
 
@@ -332,7 +333,7 @@ class Main extends React.Component
                         <Game rows={6} columns={7} board={this.state.board} highlighted={this.state.highlighted} updateBoard={this.updateBoard} active={this.state.gameActive} redFirst={this.state.redFirst} playerMove={this.state.playerCanMove} analysis={this.state.analysis} p1Height={this.state.history[this.state.index]["percent"]} best={this.state.history[this.state.index]["best"]} lastMove={this.state.lastMove} connected={this.state.connected} />
                     </div>
                 </div>
-                <button className="dark-mode" onClick={this.toggleDarkMode}>O</button>
+                <button className="dark-mode" onClick={() => {this.toggleDarkMode(); playClick();} }>O</button>
             </div>
         );
     }
@@ -376,9 +377,9 @@ class Menu extends React.Component
             return (
                 <div className="menu">
                     {this.state.prompt}<br/>
-                    <button onClick={() => this.state.buttonOneFunction()}>{this.state.buttonOneText}</button><br/>
-                    <button onClick={() => this.state.buttonTwoFunction()}>{this.state.buttonTwoText}</button><br/>
-                    <button onClick={() => this.state.backFunction()}>Back</button><br/>
+                    <button onClick={() => {this.state.buttonOneFunction(); playClick();} }>{this.state.buttonOneText}</button><br/>
+                    <button onClick={() => {this.state.buttonTwoFunction(); playClick();} }>{this.state.buttonTwoText}</button><br/>
+                    <button onClick={() => {this.state.backFunction(); playClick();} }>Back</button><br/>
                 </div>
             );
         }
@@ -386,8 +387,8 @@ class Menu extends React.Component
         {
             return (
                 <div className="menu">
-                    <button onClick={() => this.restartGame()}>Restart Game</button><br/>
-                    <button onClick={this.props.startAnalysis}>Start Analysis</button>
+                    <button onClick={() => {this.restartGame(); playClick();} }>Restart Game</button><br/>
+                    <button onClick={() => {this.props.startAnalysis(); playClick();} }>Start Analysis</button>
                 </div>
             );
         }
@@ -395,7 +396,7 @@ class Menu extends React.Component
         {
             return (
                 <div className="menu">
-                    <button onClick={() => this.restartGame()}>Restart Game</button>
+                    <button onClick={() => {this.restartGame(); playClick();} }>Restart Game</button>
                 </div>
             )
         }
@@ -837,9 +838,10 @@ function redMove(maximizingPlayer, redFirst)
     }
 }
 
-let soundElement = new drop(dropSound);
+let dropElement = new soundEffect(dropSound);
+let clickElement = new soundEffect(clickSound);
 
-function drop(src) {
+function soundEffect(src) {
     this.sound = document.createElement("audio");
     this.sound.src = src;
     this.sound.setAttribute("preload", "auto");
@@ -853,9 +855,16 @@ function drop(src) {
 
 function playDrop()
 {
-    soundElement.sound.load();
-    soundElement.sound.play()
+    dropElement.sound.load();
+    dropElement.sound.play()
     .catch(error => {console.warn("Drop sound failed")});
+}
+
+function playClick()
+{
+    clickElement.sound.load();
+    clickElement.sound.play()
+    .catch(error => {console.warn("Click sound failed")});
 }
 
 function setCookie(cname, cvalue, exdays)
