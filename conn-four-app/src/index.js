@@ -1,6 +1,5 @@
 import React from "react";
 import ReactDom from "react-dom";
-import "./style.css";
 import arrow from "./Arrow.png";
 import dropSound from "./drop.mp3";
 
@@ -28,8 +27,22 @@ class Main extends React.Component
         this.jump = this.jump.bind(this);
         this.startAnalysis = this.startAnalysis.bind(this)
         this.keyDown = this.keyDown.bind(this);
+        this.toggleDarkMode = this.toggleDarkMode.bind(this);
 
         document.onkeydown = this.keyDown;
+
+        let darkMode = getCookie("darkMode");
+        let sheet = "";
+        if (darkMode === "true")
+        {
+            darkMode = true;
+            sheet = "/dark.css";
+        }
+        else
+        {
+            darkMode = false;
+            sheet = "/style.css";
+        }
 
         this.state = {
             rows: 6,
@@ -50,7 +63,9 @@ class Main extends React.Component
             analysis: false,
             index: 0,
             lastMove: false,
-            connected: false
+            connected: false,
+            stylePath: sheet,
+            darkMode: darkMode
         }
     }
 
@@ -288,10 +303,24 @@ class Main extends React.Component
         }
     }
 
+    toggleDarkMode()
+    {
+        console.log("toggled");
+        let mode = !this.state.darkMode;
+
+        if (mode)
+            this.setState({darkMode: mode, stylePath: "/dark.css"});
+        else
+            this.setState({darkMode: mode, stylePath: "/style.css"});
+
+        setCookie("darkMode", mode, 365 * 10);
+    }
+
     render()
     {
         return (
             <div className="container">
+                <link rel="stylesheet" type="text/css" href={ process.env.PUBLIC_URL + this.state.stylePath } />
                 <h1>Connect Four</h1>
                 <div className="content" >
                     <div className="column-1">
@@ -303,6 +332,7 @@ class Main extends React.Component
                         <Game rows={6} columns={7} board={this.state.board} highlighted={this.state.highlighted} updateBoard={this.updateBoard} active={this.state.gameActive} redFirst={this.state.redFirst} playerMove={this.state.playerCanMove} analysis={this.state.analysis} p1Height={this.state.history[this.state.index]["percent"]} best={this.state.history[this.state.index]["best"]} lastMove={this.state.lastMove} connected={this.state.connected} />
                     </div>
                 </div>
+                <button className="dark-mode" onClick={this.toggleDarkMode}>O</button>
             </div>
         );
     }
@@ -826,6 +856,31 @@ function playDrop()
     soundElement.sound.load();
     soundElement.sound.play()
     .catch(error => {console.warn("Drop sound failed")});
+}
+
+function setCookie(cname, cvalue, exdays)
+{
+    var d = new Date();
+    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+    var expires = "expires="+d.toUTCString();
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+  }
+
+function getCookie(cname)
+{
+    var name = cname + "=";
+    var decodedCookie = decodeURIComponent(document.cookie);
+    var ca = decodedCookie.split(';');
+    for(var i = 0; i <ca.length; i++) {
+      var c = ca[i];
+      while (c.charAt(0) === ' ') {
+        c = c.substring(1);
+      }
+      if (c.indexOf(name) === 0) {
+        return c.substring(name.length, c.length);
+      }
+    }
+    return "";
 }
 
 ReactDom.render(<Main />, document.getElementById("root"));
