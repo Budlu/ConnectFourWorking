@@ -198,3 +198,12 @@ body {
     background-color: yellow;
     border-radius: 50%;
 }
+
+.dark-mode {
+    position: absolute;
+    background-color: black;
+    color: white;
+    font-size: 34px;
+    border-radius: 50%;
+    border: none;
+}

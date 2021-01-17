@@ -199,3 +199,12 @@ body {
     background-color: yellow;
     border-radius: 50%;
 }
+
+.dark-mode {
+    position: absolute;
+    background-color: white;
+    color: black;
+    font-size: 34px;
+    border-radius: 50%;
+    border: none;
+}
