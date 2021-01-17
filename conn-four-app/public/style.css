@@ -1,5 +1,5 @@
 body {
-    background-color: lightskyblue;
+    background-color: #7AF5F5;
     font-family: Arial, Helvetica, sans-serif;
 }
 
@@ -65,13 +65,13 @@ body {
     margin: -10px;
     padding: 20px;
     margin-bottom: 10px;
-    background-color: lightblue;
+    background-color: #78D5E3;
     text-align: center;
 }
 
 .menu button {
     font-size: 24px;
-    background-color: lightgreen;
+    background-color: #89E894;
     border-radius: 10px;
 }
 
@@ -115,13 +115,13 @@ body {
 .column button {
     outline: none;
     border: none;
-    background-color: lightskyblue;
+    background-color: #7AF5F5;
 }
 
 .analysis-button {
     font-size: 28px;
     width: 150px;
-    background-color: lightskyblue;
+    background-color: #7AF5F5;
     background-color: lightgreen;
 }
 

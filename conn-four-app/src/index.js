@@ -132,7 +132,7 @@ class Main extends React.Component
             else
             {
                 winner = "Yellow";
-                color = "#ccc200";
+                color = "yellow";
             }
 
             let highlightCopy = JSON.parse(JSON.stringify(new_highlighted));
@@ -155,7 +155,7 @@ class Main extends React.Component
         console.log(this.state.index);
 
         let redMessage = <span style={{color: "red"}}>Red's move</span>;
-        let yellowMessage = <span style={{color: "#ccc200"}}>Yellow's move</span>;
+        let yellowMessage = <span style={{color: "yellow"}}>Yellow's move</span>;
 
         if (redMove(this.state.maximizingPlayer, this.state.redFirst))
         {
