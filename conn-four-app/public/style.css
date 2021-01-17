@@ -200,10 +200,11 @@ body {
 }
 
 .dark-mode {
-    position: absolute;
+    position: fixed;
     background-color: black;
     color: white;
     font-size: 34px;
     border-radius: 50%;
     border: none;
+    bottom: 10px;
 }

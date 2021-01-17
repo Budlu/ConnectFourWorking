@@ -38,7 +38,7 @@ body {
 .eval-box {
     height: 772px;
     width: 20px;
-    border: 1px solid black;
+    border: 1px solid white;
     margin-top: 56px;
     margin-right: -24px;
     background-color: yellow;
@@ -47,7 +47,7 @@ body {
 .blank-box {
     height: 772px;
     width: 20px;
-    border: 1px solid black;
+    border: 1px solid white;
     margin-top: 56px;
     margin-right: -24px;
 }
@@ -201,10 +201,11 @@ body {
 }
 
 .dark-mode {
-    position: absolute;
+    position: fixed;
     background-color: white;
     color: black;
     font-size: 34px;
     border-radius: 50%;
     border: none;
+    bottom: 10px;
 }
