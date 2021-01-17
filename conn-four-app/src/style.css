@@ -36,20 +36,20 @@ body {
 }
 
 .eval-box {
-    height: 766px;
+    height: 772px;
     width: 20px;
     border: 1px solid black;
     margin-top: 56px;
-    margin-right: -21px;
+    margin-right: -24px;
     background-color: yellow;
 }
 
 .blank-box {
-    height: 766px;
+    height: 772px;
     width: 20px;
     border: 1px solid black;
     margin-top: 56px;
-    margin-right: -21px;
+    margin-right: -24px;
 }
 
 .eval-red {

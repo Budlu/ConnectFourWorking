@@ -234,25 +234,13 @@ class Main extends React.Component
         {
             this.setState({board: this.state.history[i]["board"], highlighted: this.state.emptyHighlight, index: i, lastMove: false});
         }
-
-        if (this.state.history[i]["percent"] !== undefined)
-        {
-            console.log(this.state.history[i]["percent"])
-            console.log(this.state.history[i]["best"]);
-        }
-        else
-        {
-            let options = {method: 'POST', mode: 'cors', headers: {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, body: JSON.stringify(this.state.history[i]["board"])};
-
-            fetch(IP, options)
-            .then(response => response.json())
-            .then(data => { this.updateHistory(data, i) } )
-            .catch(error => { this.setState({connected: false}); } );
-        }
     }
 
     updateHistory(data, i)
     {
+        if (!this.state.analysis)
+            return;
+
         let newHistory = this.state.history;
         newHistory[i]["percent"] = data["percent"];
         newHistory[i]["best"] = data["best"];
@@ -262,7 +250,21 @@ class Main extends React.Component
 
     startAnalysis()
     {
-        this.setState({analysis: true})
+        this.setState({analysis: true});
+
+        for (let i = 0; i < this.state.history.length; i++)
+        {
+            if (this.state.history[i]["percent"] === undefined)
+            {
+                let options = {method: 'POST', mode: 'cors', headers: {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, body: JSON.stringify(this.state.history[i]["board"])};
+
+                fetch(IP, options)
+                .then(response => response.json())
+                .then(data => { this.updateHistory(data, i); } )
+                .catch(error => { this.setState({connected: false}); } );
+            }
+        }
+
         this.jump(this.state.history.length - 1);
     }
 
