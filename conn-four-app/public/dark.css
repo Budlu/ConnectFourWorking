@@ -24,14 +24,7 @@ body {
     z-index: 2;
 }
 
-.arrow-invisible {
-    height: 150px;
-    width: 150px;
-    position: relative;
-    margin-left: -40px;
-    margin-right: -40px;
-    margin-bottom: -115px;
-    z-index: 2;
+.invisible {
     visibility: hidden;
 }
 
@@ -126,9 +119,7 @@ body {
     background-color: white;
 }
 
-.analysis-button-highlighted {
-    font-size: 28px;
-    width: 150px;
+.analysis .highlighted {
     background-color: #dddddd;
     font-weight: bolder;
     box-shadow: 0 0 0px 3px gray inset;
@@ -145,59 +136,18 @@ body {
     margin-right: -29px;
 }
 
-.tile-red {
-    height: 128px;
-    width: 128px;
-    outline: 1px solid white;
-    font-size: 64px;
-    text-align: center;
-    margin-top: 1px;
-    margin-left: -22px;
-    margin-right: -29px;
-    background-color: red;
-    border-radius: 50%;
-
-}
-
-.tile-yellow {
-    height: 128px;
-    width: 128px;
-    outline: 1px solid white;
-    font-size: 64px;
-    text-align: center;
-    margin-top: 1px;
-    margin-left: -22px;
-    margin-right: -29px;
-    background-color: yellow;
-    border-radius: 50%;
-}
-
-.tile-red-highlighted {
-    height: 128px;
-    width: 128px;
-    outline: 1px solid white;
-    box-shadow: 0 0 0px 4px white inset;
-    font-size: 64px;
-    text-align: center;
-    margin-top: 1px;
-    margin-left: -22px;
-    margin-right: -29px;
+.column .red {
     background-color: red;
     border-radius: 50%;
 }
 
-.tile-yellow-highlighted {
-    height: 128px;
-    width: 128px;
-    outline: 1px solid white;
-    box-shadow: 0 0 0px 4px white inset;
-    font-size: 64px;
-    text-align: center;
-    margin-top: 1px;
-    margin-left: -22px;
-    margin-right: -29px;
+.column .yellow {
     background-color: yellow;
     border-radius: 50%;
+}
+
+.column .highlighted {
+    box-shadow: 0 0 0px 4px white inset;
 }
 
 .dark-mode {

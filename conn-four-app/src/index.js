@@ -495,22 +495,22 @@ class Analysis extends React.Component
         if (this.props.visible)
         {
             let elements = this.props.history.map((board, step) => {
-                let name = "analysis-button";
+                let classes = ["analysis-button"];
 
                 if (step === this.props.index)
-                    name += "-highlighted";
+                    classes.push("highlighted");
 
                 if (step === 0)
                 {
                     return (
                         <li key={step}>
-                            <button onClick={() => this.props.jump(step)} className={name} >Start</button>
+                            <button onClick={() => this.props.jump(step)} className={classes.join(' ')} >Start</button>
                         </li>
                     )
                 }
                 return (
                     <li key={step}>
-                        <button onClick={() => this.props.jump(step)} className={name} >Move {step}</button>
+                        <button onClick={() => this.props.jump(step)} className={classes.join(' ')} >Move {step}</button>
                     </li>
                 );
             });
@@ -657,24 +657,24 @@ class Column extends React.Component
     renderTile(i)
     {
         let tile = this.props.column[i];
-        let className = "tile";
+        let classes = ["tile"]
 
         if (tile === 1)
         {
             if (this.props.redFirst)
-                className += "-red";
+                classes.push("red")
             else
-                className += "-yellow";
+                classes.push("yellow")
         }
         else if (tile === -1)
         {
             if (this.props.redFirst)
-                className += "-yellow";
+                classes.push("yellow")
             else
-                className += "-red";
+                classes.push("red")
         }
 
-        return <Tile key={i} class={className} highlighted={this.props.highlighted[i]} />;
+        return <Tile key={i} class={classes.join(' ')} highlighted={this.props.highlighted[i]} />;
     }
 
     render()
@@ -697,25 +697,18 @@ class Column extends React.Component
 
 function Arrow(props)
 {
-    if (props.visible)
-    {
-        return (
-            <img src={arrow} className="arrow" alt=""></img>
-        );
-    }
-    else
-    {
-        return (
-            <img src={arrow} className="arrow-invisible" alt=""></img>
-        );
-    }
+    let classes = ["arrow"];
+    if (!props.visible)
+        classes.push("invisible");
+
+    return <img src={arrow} className={classes.join(' ')} alt="" />
 }
 
 function Tile(props)
 {
     let className = props.class;
     if (props.highlighted)
-        className += "-highlighted";
+        className += " highlighted";
 
     return <li key={props.i} className={className}></li>
 }
