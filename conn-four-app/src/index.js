@@ -617,22 +617,17 @@ class Game extends React.Component
                 </div>
             );
         }
-        else if (!this.props.connected && height === -1)
-        {
-            return (
-                <div className="game">
-                    <div className="blank-box">
-                        <div className="eval-red" style={{height: height + '%'}}></div>
-                    </div>
-                    {elements}
-                </div>
-            );
-        }
         else
         {
+            let boxClass = "";
+            if (!this.props.connected && height === -1)
+                boxClass = "blank-box"
+            else
+                boxClass = "eval-red";
+
             return (
                 <div className="game">
-                    <div className="eval-box">
+                    <div className={boxClass}>
                         <div className="eval-red" style={{height: height + '%'}}></div>
                     </div>
                     {elements}
@@ -706,11 +701,11 @@ function Arrow(props)
 
 function Tile(props)
 {
-    let className = props.class;
+    let classes = [props.class];
     if (props.highlighted)
-        className += " highlighted";
+        classes.push("highlighted");
 
-    return <li key={props.i} className={className}></li>
+    return <li key={props.i} className={classes.join(' ')}></li>
 }
 
 function generateBoard(rows, columns)
