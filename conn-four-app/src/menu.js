@@ -152,7 +152,8 @@ export class Menu extends React.Component
 
 let clickElement = new soundEffect(clickSound);
 
-function soundEffect(src) {
+function soundEffect(src)
+{
     this.sound = document.createElement("audio");
     this.sound.src = src;
     this.sound.setAttribute("preload", "auto");

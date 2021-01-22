@@ -12,6 +12,7 @@ body {
     justify-content: center;
     position: relative;
     z-index: 1;
+    margin-top: 74px;
 }
 
 .arrow {
@@ -29,20 +30,22 @@ body {
 }
 
 .eval-box {
-    height: 772px;
+    height: 773px;
     width: 20px;
     border: 1px solid white;
-    margin-top: 56px;
+    margin-top: 129px;
     margin-right: -24px;
+    margin-left: 2px;
     background-color: yellow;
 }
 
 .blank-box {
-    height: 772px;
+    height: 773px;
     width: 20px;
     border: 1px solid white;
-    margin-top: 56px;
+    margin-top: 129px;
     margin-right: -24px;
+    margin-left: 2px;
 }
 
 .eval-red {
@@ -81,9 +84,12 @@ body {
 
 .column-2 {
     width: 75%;
+    display: flex;
+    justify-content: center;
 }
 
 .column-2 h2 {
+    position: absolute;
     text-align: center;
     margin-left: 40px;
     color: white;
@@ -134,19 +140,43 @@ body {
     margin-top: 1px;
     margin-left: -22px;
     margin-right: -29px;
+    position: relative;
 }
 
-.column .red {
+.column .red::before {
+    content: "";
+    height: 100%;
+    width: 100%;
+    top: 0px;
+    left: 0px;
+    position: absolute;
     background-color: red;
     border-radius: 50%;
+    animation: drop 0.25s ease-in;
 }
 
-.column .yellow {
+.column .yellow::before {
+    content: "";
+    height: 100%;
+    width: 100%;
+    top: 0px;
+    left: 0px;
+    position: absolute;
     background-color: yellow;
     border-radius: 50%;
+    animation: drop 0.25s ease-in;
 }
 
-.column .highlighted {
+@keyframes drop {
+    from {
+        transform: translateY(-50vh);
+    }
+    to {
+        transform: translateY(0vh);
+    }
+}
+
+.column .highlighted::before {
     box-shadow: 0 0 0px 4px white inset;
 }
 

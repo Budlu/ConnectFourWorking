@@ -5,6 +5,7 @@ import clickSound from "./click.mp3";
 import { Game } from "./game.js";
 import { Menu } from "./menu.js";
 import { Analysis } from "./analysis.js";
+import { EvalBar } from "./evalbar.js";
 
 const IP = "http://localhost:5000/percent";
 
@@ -282,8 +283,6 @@ class Main extends React.Component
                 .catch(error => { this.setState({connected: false}); } );
             }
         }
-
-        this.jump(this.state.history.length - 1);
     }
 
     keyDown(e)
@@ -332,7 +331,8 @@ class Main extends React.Component
                     </div>
                     <div className="column-2">
                         <h2>{this.state.status}</h2>
-                        <Game rows={6} columns={7} board={this.state.board} highlighted={this.state.highlighted} updateBoard={this.updateBoard} active={this.state.gameActive} redFirst={this.state.redFirst} playerMove={this.state.playerCanMove} analysis={this.state.analysis} p1Height={this.state.history[this.state.index]["percent"]} best={this.state.history[this.state.index]["best"]} lastMove={this.state.lastMove} connected={this.state.connected} />
+                        <EvalBar redFirst={this.state.redFirst} p1Height={this.state.history[this.state.index]["percent"]} analysis={this.state.analysis} connected={this.state.connected} />
+                        <Game rows={6} columns={7} board={this.state.board} highlighted={this.state.highlighted} updateBoard={this.updateBoard} active={this.state.gameActive} redFirst={this.state.redFirst} playerMove={this.state.playerCanMove} analysis={this.state.analysis} best={this.state.history[this.state.index]["best"]} lastMove={this.state.lastMove} connected={this.state.connected} />
                     </div>
                 </div>
                 <button className="dark-mode" onClick={() => {this.toggleDarkMode(); playClick();} }>O</button>
@@ -462,7 +462,8 @@ function redMove(maximizingPlayer, redFirst)
 let dropElement = new soundEffect(dropSound);
 let clickElement = new soundEffect(clickSound);
 
-function soundEffect(src) {
+function soundEffect(src)
+{
     this.sound = document.createElement("audio");
     this.sound.src = src;
     this.sound.setAttribute("preload", "auto");
@@ -511,6 +512,18 @@ function getCookie(cname)
       }
     }
     return "";
+}
+
+let tiles = document.getElementsByClassName("tile");
+for (let tile of tiles)
+{
+    tile.addEventListener("animationend", dropAnimationEnd());
+}
+
+function dropAnimationEnd()
+{
+    console.log("event fired");
+    playDrop();
 }
 
 ReactDom.render(<Main />, document.getElementById("root"));
