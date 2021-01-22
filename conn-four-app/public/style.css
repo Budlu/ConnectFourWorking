@@ -188,3 +188,19 @@ body {
     border: none;
     bottom: 10px;
 }
+
+.credits {
+    color: black;
+    font-size: 16px;
+    position: fixed;
+    right: 10px;
+    bottom: 10px;
+}
+
+.credits a:link {
+    color: gray;
+}
+
+.credits a:visited {
+    color: darkslategray;
+}

@@ -189,3 +189,19 @@ body {
     border: none;
     bottom: 10px;
 }
+
+.credits {
+    color: white;
+    font-size: 16px;
+    position: fixed;
+    right: 10px;
+    bottom: 10px;
+}
+
+.credits a:link {
+    color: lightblue;
+}
+
+.credits a:visited {
+    color: skyblue;
+}

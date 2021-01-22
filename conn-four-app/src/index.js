@@ -336,6 +336,9 @@ class Main extends React.Component
                     </div>
                 </div>
                 <button className="dark-mode" onClick={() => {this.toggleDarkMode(); playClick();} }>O</button>
+                <div className="credits">
+                    Matthew Rubino - <a href="https://github.com/Budlu/ConnectFour" target="_blank" rel="noreferrer">https://github.com/Budlu/ConnectFour</a>
+                </div>
             </div>
         );
     }
