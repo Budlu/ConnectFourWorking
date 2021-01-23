@@ -290,6 +290,8 @@ class Main extends React.Component
                 .catch(error => { this.setState({connected: false}); } );
             }
         }
+
+        this.jump(0);
     }
 
     keyDown(e)
