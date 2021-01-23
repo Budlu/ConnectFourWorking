@@ -159,8 +159,6 @@ class Main extends React.Component
 
     updateGame()
     {
-        console.log(this.state.index);
-
         let redMessage = <span style={{color: "red"}}>Red's move</span>;
         let yellowMessage = <span style={{color: "yellow"}}>Yellow's move</span>;
 
@@ -316,7 +314,6 @@ class Main extends React.Component
 
     toggleDarkMode()
     {
-        console.log("toggled");
         let mode = !this.state.darkMode;
 
         if (mode)
@@ -490,7 +487,6 @@ function soundEffect(src)
 function playDrop()
 {
     setTimeout(function() {
-        console.log("sound played");
         dropElement.sound.load();
         dropElement.sound.play()
         .catch(error => {console.warn("Drop sound failed")});
@@ -537,7 +533,6 @@ for (let tile of tiles)
 
 function dropAnimationEnd()
 {
-    console.log("event fired");
     playDrop();
 }
 

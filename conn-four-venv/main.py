@@ -83,9 +83,6 @@ def minimax(board, drop_height, depth, alpha, beta, maximizing_player, last_boar
             new_board, new_drop_height = take_action(board_copy, drop_height_copy, maximizing_player, action)
             this_val, eval_depth, last_best_action = minimax(new_board, new_drop_height, depth - 1, alpha, beta, True, board_int, action)
 
-            if depth == SEARCH_DEPTH:
-                print(action, this_val)
-
             if this_val == -WIN_VAL:
                 if this_val < min_eval or eval_depth > selected_depth:
                     selected_depth = eval_depth
@@ -302,16 +299,20 @@ app = flask.Flask(__name__)
 
 @app.route('/percent', methods=['POST'])
 def get_percent():
-    data = flask.request.get_json()
 
-    board = np.array(data)
-    drop_height = calculate_drop_height(board)
-    player = get_turn(board)
+    try:
+        data = flask.request.get_json()
 
-    val, eval_depth, move = minimax(board, drop_height, SEARCH_DEPTH, -math.inf, math.inf, player, None, None)
-    percent = clamp(50 + (val * 2), 0, 100)
+        board = np.array(data)
+        drop_height = calculate_drop_height(board)
+        player = get_turn(board)
 
-    return json.dumps({"percent": int(percent), "best": move})
+        val, eval_depth, move = minimax(board, drop_height, SEARCH_DEPTH, -math.inf, math.inf, player, None, None)
+        percent = clamp(50 + (val * 2), 0, 100)
+
+        return json.dumps({"percent": int(percent), "best": move})
+    except:
+        print("Invalid post data")
 
 if __name__ == '__main__':
     atexit.register(write_hashes)
