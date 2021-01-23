@@ -7,7 +7,7 @@ import copy
 import pickle
 import atexit
 
-SEARCH_DEPTH = 6
+SEARCH_DEPTH = 7
 WIN_VAL = 200
 SINGLE_THREAT_VAL = 5
 MULTI_THREAT_VAL = 20

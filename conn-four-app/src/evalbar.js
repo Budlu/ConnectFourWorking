@@ -24,7 +24,7 @@ export class EvalBar extends React.Component
         if (!this.props.connected && height === -1)
             boxClass = "blank-box"
         else
-            boxClass = "eval-red";
+            boxClass = "eval-box";
 
         return (
                 <div className={boxClass}>
