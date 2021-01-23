@@ -1,10 +1,7 @@
 body {
     background-color: black;
     font-family: Arial, Helvetica, sans-serif;
-}
-
-.content {
-    display: flex;
+    overflow-x: hidden;
 }
 
 .game {
@@ -78,12 +75,10 @@ body {
     border-radius: 10px;
 }
 
-.column-1 {
-    width: 25%;
-}
-
 .column-2 {
-    width: 75%;
+    position: absolute;
+    left: 800px;
+    top: 75px;
     display: flex;
     justify-content: center;
 }
@@ -91,17 +86,15 @@ body {
 .column-2 h2 {
     position: absolute;
     text-align: center;
-    margin-left: 40px;
+    margin-left: 50px;
     color: white;
 }
 
 .analysis {
-    margin-top: 20%;
+    margin-top: 50px;
     display: inline-flex;
     flex-wrap: wrap;
     flex-direction: column;
-    height: auto;
-    max-height: 32%;
 }
 
 .analysis li {
@@ -121,6 +114,7 @@ body {
 
 .analysis-button {
     font-size: 28px;
+    height: 40px;
     width: 150px;
     background-color: white;
 }
@@ -196,6 +190,7 @@ body {
     position: fixed;
     right: 10px;
     bottom: 10px;
+    z-index: 2;
 }
 
 .credits a:link {

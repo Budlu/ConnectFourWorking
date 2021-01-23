@@ -8,6 +8,8 @@ import { Analysis } from "./analysis.js";
 import { EvalBar } from "./evalbar.js";
 
 const IP = "http://localhost:5000/percent";
+const ANALYSIS_COLUMNS = 3;
+const BUTTON_HEIGHT = 40;
 
 class Main extends React.Component
 {
@@ -270,6 +272,10 @@ class Main extends React.Component
     startAnalysis()
     {
         this.setState({analysis: true});
+
+        let maxHeight = Math.ceil(this.state.history.length / ANALYSIS_COLUMNS) * BUTTON_HEIGHT;
+        let analysis = document.getElementsByClassName("analysis")[0];
+        analysis.style.maxHeight = maxHeight + "px";
 
         for (let i = 0; i < this.state.history.length; i++)
         {

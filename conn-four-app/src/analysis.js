@@ -30,7 +30,7 @@ export class Analysis extends React.Component
             return <div className="analysis">{elements}</div>;
         }
         else
-            return "";
+            return <div className="analysis"></div>;
     }
 
     startAnalysis()
