@@ -10,6 +10,7 @@ import { EvalBar } from "./evalbar.js";
 const IP = "http://localhost:5000/percent";
 const ANALYSIS_COLUMNS = 3;
 const BUTTON_HEIGHT = 40;
+const DROP_TIME = 125;
 
 class Main extends React.Component
 {
@@ -330,6 +331,9 @@ class Main extends React.Component
             <div className="container">
                 <link rel="stylesheet" type="text/css" href={ process.env.PUBLIC_URL + this.state.stylePath } />
                 <h1>Connect Four</h1>
+                <div className="credits">
+                    Matthew Rubino - <a href="https://github.com/Budlu/ConnectFour" target="_blank" rel="noreferrer">https://github.com/Budlu/ConnectFour</a>
+                </div>
                 <div className="content" >
                     <div className="column-1">
                         <Menu pvpMode={this.pvpMode} playerFirst={this.playerFirst} redFirst={this.redFirst} startGame={this.startGame} restartGame={this.restartGame} visible={this.state.gameOver} started={this.state.analysis} startAnalysis={this.startAnalysis} />
@@ -342,9 +346,6 @@ class Main extends React.Component
                     </div>
                 </div>
                 <button className="dark-mode" onClick={() => {this.toggleDarkMode(); playClick();} }>O</button>
-                <div className="credits">
-                    Matthew Rubino - <a href="https://github.com/Budlu/ConnectFour" target="_blank" rel="noreferrer">https://github.com/Budlu/ConnectFour</a>
-                </div>
             </div>
         );
     }
@@ -486,9 +487,12 @@ function soundEffect(src)
 
 function playDrop()
 {
-    dropElement.sound.load();
-    dropElement.sound.play()
-    .catch(error => {console.warn("Drop sound failed")});
+    setTimeout(function() {
+        console.log("sound played");
+        dropElement.sound.load();
+        dropElement.sound.play()
+        .catch(error => {console.warn("Drop sound failed")});
+    }, DROP_TIME);
 }
 
 function playClick()

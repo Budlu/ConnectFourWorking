@@ -56,9 +56,10 @@ body {
 }
 
 .container h1 {
-    margin: -10px;
-    padding: 20px;
-    margin-bottom: 10px;
+    margin: -20px;
+    margin-bottom: -30px;
+    padding: 30px;
+    padding-bottom: 40px;
     background-color: white;
     text-align: center;
 }
@@ -77,8 +78,8 @@ body {
 
 .column-2 {
     position: absolute;
-    left: 800px;
-    top: 75px;
+    left: 750px;
+    top: 88px;
     display: flex;
     justify-content: center;
 }
@@ -163,10 +164,10 @@ body {
 
 @keyframes drop {
     from {
-        transform: translateY(-50vh);
+        transform: translateY(-100%);
     }
     to {
-        transform: translateY(0vh);
+        transform: translateY(0%);
     }
 }
 
@@ -185,18 +186,15 @@ body {
 }
 
 .credits {
-    color: white;
+    margin-bottom: 20px;
     font-size: 16px;
-    position: fixed;
-    right: 10px;
-    bottom: 10px;
-    z-index: 2;
+    text-align: center;
 }
 
 .credits a:link {
-    color: lightblue;
+    color: gray;
 }
 
 .credits a:visited {
-    color: skyblue;
+    color: darkslategray;
 }
