@@ -7,7 +7,7 @@ import copy
 import pickle
 import atexit
 
-SEARCH_DEPTH = 7
+SEARCH_DEPTH = 6
 WIN_VAL = 200
 SINGLE_THREAT_VAL = 5
 MULTI_THREAT_VAL = 20
@@ -27,6 +27,10 @@ def take_action(this_board, this_drop_height, maximizing_player, action):
     return this_board, this_drop_height
     
 def minimax(board, drop_height, depth, alpha, beta, maximizing_player, last_board, last_action):
+    moves = get_valid_moves(drop_height)
+    if moves == []:
+        return 0, 0, 0
+
     if last_board != None:
         board_int = board_to_int_fast(last_board, last_action, not maximizing_player)
     else:
@@ -46,7 +50,7 @@ def minimax(board, drop_height, depth, alpha, beta, maximizing_player, last_boar
         selected_depth = -1
         selected_action = 0
 
-        for action in get_valid_moves(drop_height):
+        for action in moves:
             board_copy = copy.deepcopy(board)
             drop_height_copy = copy.deepcopy(drop_height)
 
@@ -73,7 +77,7 @@ def minimax(board, drop_height, depth, alpha, beta, maximizing_player, last_boar
         selected_depth = -1
         selected_action = 0
 
-        for action in get_valid_moves(drop_height):
+        for action in moves:
             board_copy = copy.deepcopy(board)
             drop_height_copy = copy.deepcopy(drop_height)
 
