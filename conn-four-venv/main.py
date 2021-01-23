@@ -1,7 +1,6 @@
 import numpy as np
 import math
 import flask
-from flask_cors import CORS
 import json
 import copy
 import pickle
@@ -300,7 +299,6 @@ with open(FILENAME, "rb") as f:
         print(FILENAME + " is empty.")
 
 app = flask.Flask(__name__)
-CORS(app)
 
 @app.route('/percent', methods=['POST'])
 def get_percent():
