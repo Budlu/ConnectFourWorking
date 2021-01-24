@@ -1,7 +1,5 @@
 import React from "react";
 import ReactDom from "react-dom";
-import dropSound from "./drop.mp3";
-import clickSound from "./click.mp3";
 import { Game } from "./game.js";
 import { Menu } from "./menu.js";
 import { Analysis } from "./analysis.js";
@@ -468,8 +466,8 @@ function redMove(maximizingPlayer, redFirst)
     }
 }
 
-let dropElement = new soundEffect(dropSound);
-let clickElement = new soundEffect(clickSound);
+let dropElement = new soundEffect(process.env.PUBLIC_URL + "/drop.mp3");
+let clickElement = new soundEffect(process.env.PUBLIC_URL + "/click.mp3");
 
 function soundEffect(src)
 {

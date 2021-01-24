@@ -1,5 +1,4 @@
 import React from "react";
-import arrow from "./Arrow.png";
 
 export class Game extends React.Component
 {
@@ -132,7 +131,7 @@ function Arrow(props)
     if (!props.visible)
         classes.push("invisible");
 
-    return <img src={arrow} className={classes.join(' ')} alt="" />
+    return <img src={process.env.PUBLIC_URL + "/Arrow.png"} className={classes.join(' ')} alt="" />
 }
 
 function Tile(props)

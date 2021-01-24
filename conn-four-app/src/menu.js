@@ -1,5 +1,4 @@
 import React from "react";
-import clickSound from "./click.mp3";
 
 export class Menu extends React.Component
 {
@@ -150,7 +149,7 @@ export class Menu extends React.Component
     }
 }
 
-let clickElement = new soundEffect(clickSound);
+let clickElement = new soundEffect(process.env.PUBLIC_URL + "/click.mp3");
 
 function soundEffect(src)
 {
