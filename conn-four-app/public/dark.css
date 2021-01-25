@@ -1,6 +1,7 @@
 body {
     background-color: black;
     font-family: Arial, Helvetica, sans-serif;
+    padding-left: 5px;
 }
 
 .game {
@@ -12,12 +13,12 @@ body {
 }
 
 .arrow {
-    height: 150px;
-    width: 150px;
+    height: 100px;
+    width: 100px;
     position: relative;
-    margin-left: -40px;
-    margin-right: -40px;
-    margin-bottom: -115px;
+    justify-content: center;
+    margin-bottom: -80px;
+    margin-top: 20px;
     z-index: 2;
 }
 
@@ -26,22 +27,24 @@ body {
 }
 
 .eval-box {
-    height: 773px;
+    height: 605px;
     width: 20px;
     border: 1px solid white;
-    margin-top: 75px;
-    margin-right: -24px;
-    margin-left: 2px;
+    margin-top: 80px;
+    margin-right: -20px;
+    margin-left: -2.5px;
     background-color: yellow;
+    z-index: 2;
 }
 
 .blank-box {
-    height: 773px;
+    height: 605px;
     width: 20px;
     border: 1px solid white;
-    margin-top: 75px;
-    margin-right: -24px;
-    margin-left: 2px;
+    margin-top: 80px;
+    margin-right: -20px;
+    margin-left: -2.5px;
+    z-index: 2;
 }
 
 .eval-red {
@@ -55,12 +58,11 @@ body {
 }
 
 .container h1 {
-    margin: -20px;
-    margin-bottom: -30px;
-    padding: 30px;
-    padding-bottom: 40px;
+    margin: -15px;
+    padding: 10px;
+    padding-bottom: 30px;
+    width: 2115px;
     background-color: white;
-    text-align: center;
 }
 
 .menu button {
@@ -105,6 +107,8 @@ body {
 .column {
     list-style-type: none;
     display: inline-block;
+    margin-left: -25.5px;
+    margin-right: -25.5px;
 }
 
 .column button {
@@ -127,14 +131,12 @@ body {
 }
 
 .tile {
-    height: 128px;
-    width: 128px;
+    height: 100px;
+    width: 100px;
     outline: 1px solid white;
     font-size: 64px;
     text-align: center;
-    margin-top: 1px;
-    margin-left: -22px;
-    margin-right: -29px;
+    margin-top: 1.1px;
     position: relative;
 }
 
@@ -183,12 +185,13 @@ body {
     border-radius: 50%;
     border: none;
     bottom: 10px;
+    z-index: 3;
 }
 
 .credits {
+    margin-top: -20px;
     margin-bottom: 20px;
     font-size: 16px;
-    text-align: center;
 }
 
 .credits a:link {

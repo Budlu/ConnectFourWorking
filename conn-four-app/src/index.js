@@ -5,7 +5,7 @@ import { Menu } from "./menu.js";
 import { Analysis } from "./analysis.js";
 import { EvalBar } from "./evalbar.js";
 
-const IP = "http://localhost:5000/percent";
+const IP = "http://3.17.24.125/percent";
 const ANALYSIS_COLUMNS = 3;
 const BUTTON_HEIGHT = 40;
 const DROP_TIME = 125;
@@ -343,6 +343,8 @@ class Main extends React.Component
                     </div>
                 </div>
                 <button className="dark-mode" onClick={() => {this.toggleDarkMode(); playClick();} }>O</button>
+                <audio src={process.env.PUBLIC_URL + "/click.mp3"} preload="auto" controls="none" id="sound" style={{display: "none"}} className="click-source" />
+                <audio src={process.env.PUBLIC_URL + "/drop.mp3"} preload="auto" controls="none" id="sound" style={{display: "none"}} className="drop-source" />
             </div>
         );
     }
@@ -466,35 +468,21 @@ function redMove(maximizingPlayer, redFirst)
     }
 }
 
-let dropElement = new soundEffect(process.env.PUBLIC_URL + "/drop.mp3");
-let clickElement = new soundEffect(process.env.PUBLIC_URL + "/click.mp3");
-
-function soundEffect(src)
-{
-    this.sound = document.createElement("audio");
-    this.sound.src = src;
-    this.sound.setAttribute("preload", "auto");
-    this.sound.setAttribute("controls", "none");
-    this.sound.setAttribute("id", "sound")
-    this.sound.style.display = "none";
-    document.body.appendChild(this.sound);
-    this.play = function() { this.sound.play(); }
-    this.stop = function() { this.sound.pause(); }
-}
-
 function playDrop()
 {
+    let drop = document.getElementsByClassName("drop-source")[0];
     setTimeout(function() {
-        dropElement.sound.load();
-        dropElement.sound.play()
+        drop.load();
+        drop.play()
         .catch(error => {console.warn("Drop sound failed")});
     }, DROP_TIME);
 }
 
 function playClick()
 {
-    clickElement.sound.load();
-    clickElement.sound.play()
+    let click = document.getElementsByClassName("click-source")[0];
+    click.load();
+    click.play()
     .catch(error => {console.warn("Click sound failed")});
 }
 
