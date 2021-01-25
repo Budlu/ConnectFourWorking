@@ -474,7 +474,7 @@ function playDrop()
     setTimeout(function() {
         drop.load();
         drop.play()
-        .catch(error => {error});
+        .catch(error => {console.warn(error)});
     }, DROP_TIME);
 }
 
