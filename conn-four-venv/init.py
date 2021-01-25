@@ -301,7 +301,7 @@ CORS(app)
 
 @app.route('/', methods=['GET'])
 def main():
-    return "<h1>You just got served!</h1>"
+    return flask.render_template("index.html", token="token")
 
 @app.route('/percent', methods=['POST'])
 def get_percent():

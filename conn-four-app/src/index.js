@@ -474,7 +474,7 @@ function playDrop()
     setTimeout(function() {
         drop.load();
         drop.play()
-        .catch(error => {console.warn("Drop sound failed")});
+        .catch(error => {error});
     }, DROP_TIME);
 }
 
@@ -483,7 +483,7 @@ function playClick()
     let click = document.getElementsByClassName("click-source")[0];
     click.load();
     click.play()
-    .catch(error => {console.warn("Click sound failed")});
+    .catch(error => {console.warn(error)});
 }
 
 function setCookie(cname, cvalue, exdays)
