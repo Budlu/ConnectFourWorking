@@ -5,7 +5,7 @@ import { Menu } from "./menu.js";
 import { Analysis } from "./analysis.js";
 import { EvalBar } from "./evalbar.js";
 
-const IP = "http://3.17.24.125/percent";
+const IP = "http://localhost/percent";
 const ANALYSIS_COLUMNS = 3;
 const BUTTON_HEIGHT = 40;
 const DROP_TIME = 125;

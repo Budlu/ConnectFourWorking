@@ -4,7 +4,6 @@ import flask
 import json
 import copy
 import pickle
-import atexit
 
 SEARCH_DEPTH = 6
 WIN_VAL = 200
@@ -39,7 +38,7 @@ def minimax(board, drop_height, depth, alpha, beta, maximizing_player, last_boar
 
     if val == None:
         val = evaluate(board)
-        HASHES[board_int] = val
+        HASHES[board_int] = int(val)
     
     if depth == 0 or abs(val) == WIN_VAL:
         return val, depth, 0
@@ -282,10 +281,6 @@ def board_to_int_fast(last_board, action, player):
     
     return ret_val
 
-def write_hashes():
-    with open(FILENAME, "wb") as f:
-        pickle.dump(HASHES, f)
-
 FILENAME = "val_hashes.p"
 HASHES = {}
 with open(FILENAME, "rb") as f:
@@ -299,6 +294,10 @@ app = flask.Flask(__name__)
 
 @app.route('/', methods=['GET'])
 def main():
+    return flask.render_template("index.html", token="token")
+
+@app.route('/projects/connect')
+def connect():
     return flask.render_template("index.html", token="token")
 
 @app.route('/percent', methods=['POST'])
@@ -319,5 +318,4 @@ def get_percent():
         print("Invalid post data")
 
 if __name__ == '__main__':
-    atexit.register(write_hashes)
-    app.run()
+    app.run(port=80)
