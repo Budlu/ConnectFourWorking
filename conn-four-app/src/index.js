@@ -5,7 +5,7 @@ import { Menu } from "./menu.js";
 import { Analysis } from "./analysis.js";
 import { EvalBar } from "./evalbar.js";
 
-const IP = "http://localhost/percent";
+const POST_IP = "percent";
 const ANALYSIS_COLUMNS = 3;
 const BUTTON_HEIGHT = 40;
 const DROP_TIME = 125;
@@ -184,7 +184,7 @@ class Main extends React.Component
     {
         let options = {method: 'POST', mode: 'cors', headers: {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, body: JSON.stringify(this.state.board)};
 	
-        fetch(IP, options)
+        fetch(POST_IP, options)
         .then(response => response.json())
         .then(data => { this.handleData(data) } )
         .catch(error => { this.randomMove(); } );
@@ -280,7 +280,7 @@ class Main extends React.Component
             {
                 let options = {method: 'POST', mode: 'cors', headers: {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, body: JSON.stringify(this.state.history[i]["board"])};
 
-                fetch(IP, options)
+                fetch(POST_IP, options)
                 .then(response => response.json())
                 .then(data => { this.updateHistory(data, i); } )
                 .catch(error => { this.setState({connected: false}); } );
