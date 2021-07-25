@@ -190,7 +190,6 @@ body {
     height: calc(30vw + 5.5px);
     width: 1vw;
     border: 1px solid black;
-    border-right: none;
     background-color: yellow;
     z-index: 2;
     position: absolute;
