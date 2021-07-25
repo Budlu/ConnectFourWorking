@@ -37,7 +37,9 @@ export class Menu extends React.Component
         {
             return (
                 <div className="menu">
-                    {this.state.prompt}<br/>
+                    <div className="prompt">
+                        {this.state.prompt}<br/>
+                    </div>
                     <button onClick={() => {this.state.buttonOneFunction(); playClick();} }>{this.state.buttonOneText}</button><br/>
                     <button onClick={() => {this.state.buttonTwoFunction(); playClick();} }>{this.state.buttonTwoText}</button><br/>
                     <button onClick={() => {this.state.backFunction(); playClick();} }>Back</button><br/>

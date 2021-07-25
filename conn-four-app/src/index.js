@@ -7,7 +7,6 @@ import { EvalBar } from "./evalbar.js";
 
 const POST_IP = "percent";
 const ANALYSIS_COLUMNS = 3;
-const BUTTON_HEIGHT = 40;
 const DROP_TIME = 125;
 
 class Main extends React.Component
@@ -270,10 +269,6 @@ class Main extends React.Component
     {
         this.setState({analysis: true});
 
-        let maxHeight = Math.ceil(this.state.history.length / ANALYSIS_COLUMNS) * BUTTON_HEIGHT;
-        let analysis = document.getElementsByClassName("analysis")[0];
-        analysis.style.maxHeight = maxHeight + "px";
-
         for (let i = 0; i < this.state.history.length; i++)
         {
             if (this.state.history[i]["percent"] === undefined)
@@ -327,9 +322,11 @@ class Main extends React.Component
         return (
             <div className="container">
                 <link rel="stylesheet" type="text/css" href={ process.env.PUBLIC_URL + this.state.stylePath } />
-                <h1>Connect Four</h1>
-                <div className="credits">
-                    Matthew Rubino - <a href="https://github.com/Budlu/ConnectFour" target="_blank" rel="noreferrer">https://github.com/Budlu/ConnectFour</a>
+                <div className="header">
+                    <h1>Connect Four</h1>
+                    <div className="credits">
+                        Matthew Rubino - <a href="https://github.com/Budlu/ConnectFour" target="_blank" rel="noreferrer">https://github.com/Budlu/ConnectFour</a>
+                    </div>
                 </div>
                 <div className="content" >
                     <div className="column-1">
@@ -338,8 +335,10 @@ class Main extends React.Component
                     </div>
                     <div className="column-2">
                         <h2>{this.state.status}</h2>
-                        <EvalBar redFirst={this.state.redFirst} p1Height={this.state.history[this.state.index]["percent"]} analysis={this.state.analysis} connected={this.state.connected} />
-                        <Game rows={6} columns={7} board={this.state.board} highlighted={this.state.highlighted} updateBoard={this.updateBoard} active={this.state.gameActive} redFirst={this.state.redFirst} playerMove={this.state.playerCanMove} analysis={this.state.analysis} best={this.state.history[this.state.index]["best"]} lastMove={this.state.lastMove} connected={this.state.connected} />
+                        <div className="game-link">
+                            <EvalBar redFirst={this.state.redFirst} p1Height={this.state.history[this.state.index]["percent"]} analysis={this.state.analysis} connected={this.state.connected} />
+                            <Game rows={6} columns={7} board={this.state.board} highlighted={this.state.highlighted} updateBoard={this.updateBoard} active={this.state.gameActive} redFirst={this.state.redFirst} playerMove={this.state.playerCanMove} analysis={this.state.analysis} best={this.state.history[this.state.index]["best"]} lastMove={this.state.lastMove} connected={this.state.connected} />
+                        </div>
                     </div>
                 </div>
                 <button className="dark-mode" onClick={() => {this.toggleDarkMode(); playClick();} }>O</button>

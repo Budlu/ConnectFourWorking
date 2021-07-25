@@ -27,7 +27,7 @@ export class Game extends React.Component
     renderColumn(i)
     {
         let column = <Column index={i} total_height={this.props.rows} column={this.getColumn(i)} highlighted={this.props.highlighted[i]} redFirst={this.props.redFirst} best={this.props.best} analysis={this.props.analysis} lastMove={this.props.lastMove} />;
-        return <ul key={i} className="column"><button onClick={() => this.debugClick(i)}>{column}</button></ul>;
+        return <div key={i} className="column"><button onClick={() => this.debugClick(i)}>{column}</button></div>;
     }
 
     getMoveHeight(k)
@@ -104,7 +104,7 @@ class Column extends React.Component
                 classes.push("red")
         }
 
-        return <Tile key={i} class={classes.join(' ')} highlighted={this.props.highlighted[i]} />;
+        return <Tile key={i} i={i} column={this.props.index} class={classes.join(' ')} highlighted={this.props.highlighted[i]} />;
     }
 
     render()
@@ -140,5 +140,5 @@ function Tile(props)
     if (props.highlighted)
         classes.push("highlighted");
 
-    return <li key={props.i} className={classes.join(' ')}></li>
+    return <li key={props.i} style={{borderTop: ((props.i === 0) ? "auto" : "none"), borderLeft: ((props.column === 0) ? "auto" : "none")}} className={classes.join(' ')}></li>
 }
