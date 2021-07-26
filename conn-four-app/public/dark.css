@@ -248,9 +248,9 @@ body {
     background-color: white;
     color: black;
     font-size: 34px;
-    border-radius: 50%;
+    border-radius: 100%;
     border: none;
-    left: 10px;
+    right: 10px;
     bottom: 10px;
     z-index: 3;
 
@@ -313,6 +313,11 @@ body {
     }
 
     .tile {
+        width: 8vw;
+        height: 8vw;
+    }
+
+    .arrow {
         width: 8vw;
         height: 8vw;
     }

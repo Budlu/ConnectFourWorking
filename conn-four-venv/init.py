@@ -318,4 +318,4 @@ def get_percent():
         print("Invalid post data")
 
 if __name__ == '__main__':
-    app.run()
+    app.run(port=80)
