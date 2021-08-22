@@ -294,11 +294,11 @@ app = flask.Flask(__name__)
 
 @app.route('/', methods=['GET'])
 def main():
-    return flask.render_template("index.html", token="token")
+    return flask.render_template("connect.html", token="token")
 
 @app.route('/projects/connect')
 def connect():
-    return flask.render_template("index.html", token="token")
+    return flask.render_template("connect.html", token="token")
 
 @app.route('/percent', methods=['POST'])
 def get_percent():
